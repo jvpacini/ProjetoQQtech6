@@ -1,0 +1,21 @@
+.form-select {
+  padding: 10px;
+  width: 40%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.form-select:hover {
+  background-color: #e9ecef;
+}
+
+.dropdown-item {
+  padding: 10px;
+}
+
+.dropdown-item:hover {
+  background-color: #e9ecef;
+}

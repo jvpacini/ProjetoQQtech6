@@ -1,0 +1,27 @@
+.modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.modal-content {
+  background-color: #f7f6f6;
+  padding: 30px;
+  padding-left: 70px;
+  padding-right: 70px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  position: relative;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}

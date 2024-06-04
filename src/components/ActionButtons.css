@@ -1,0 +1,17 @@
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #d9d9d9;
+  color: #333;
+  cursor: pointer;
+}
+
+.actions button:hover {
+  background-color: #c4c4c4;
+}
