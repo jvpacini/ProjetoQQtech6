@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import "./Box.css";
 
-const Box = ({ isVisible, onClose, title, children, onConfirm }) => {
+function Box({ isVisible, onClose, title, children, onConfirm }) {
   if (!isVisible) return null;
 
   return (
@@ -20,7 +20,7 @@ const Box = ({ isVisible, onClose, title, children, onConfirm }) => {
       </div>
     </div>
   );
-};
+}
 
 Box.propTypes = {
   isVisible: PropTypes.bool.isRequired,

@@ -9,7 +9,7 @@ import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import "./Dashboard.css";
 
-const UserDashboard = ({ searchTerm, onSearch }) => {
+function UserDashboard({ searchTerm, onSearch }) {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -58,38 +58,36 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   ];
 
   return (
-    <div className="dashboard-container">
+    <div className="content">
       <h1>Usuários</h1>
       <SideBar />
-      <div className="content">
-        <SearchBar data={[]} onSearch={onSearch} />
-        <DynamicTable columns={userColumns} data={filteredUsers} maxRows={10} />
-        <Pagination />
-        <ActionButtons buttons={userButtons} />
-        <Cover isVisible={isModalVisible} onClose={handleModalClose} />
-        <Modal
-          isVisible={isModalVisible}
-          onClose={handleModalClose}
-          title="Cadastro de usuário"
-          onConfirm={handleConfirm}
-        >
-          <form>
-            <input type="text" placeholder="Nome completo" required />
-            <input type="email" placeholder="E-mail" required />
-            <select required>
-              <option value="" disabled selected>
-                Perfil
-              </option>
-              <option value="admin">Admin</option>
-              <option value="user">User</option>
-            </select>
-            <input type="password" placeholder="Senha" required />
-          </form>
-        </Modal>
-      </div>
+      <SearchBar data={[]} onSearch={onSearch} />
+      <DynamicTable columns={userColumns} data={filteredUsers} maxRows={10} />
+      <Pagination />
+      <ActionButtons buttons={userButtons} />
+      <Cover isVisible={isModalVisible} onClose={handleModalClose} />
+      <Modal
+        isVisible={isModalVisible}
+        onClose={handleModalClose}
+        title="Cadastro de usuário"
+        onConfirm={handleConfirm}
+      >
+        <form>
+          <input type="text" placeholder="Nome completo" required />
+          <input type="email" placeholder="E-mail" required />
+          <select required>
+            <option value="" disabled selected>
+              Perfil
+            </option>
+            <option value="admin">Admin</option>
+            <option value="user">User</option>
+          </select>
+          <input type="password" placeholder="Senha" required />
+        </form>
+      </Modal>
     </div>
   );
-};
+}
 
 UserDashboard.propTypes = {
   searchTerm: PropTypes.string.isRequired,

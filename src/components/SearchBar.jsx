@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "./SearchBar.css";
 
-const SearchBar = ({ data, onSearch }) => {
+function SearchBar({ data, onSearch }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
 
@@ -48,7 +48,7 @@ const SearchBar = ({ data, onSearch }) => {
       )}
     </div>
   );
-};
+}
 
 SearchBar.propTypes = {
   data: PropTypes.arrayOf(PropTypes.string).isRequired,

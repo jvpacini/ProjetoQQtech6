@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import "./ActionButtons.css";
 
-const ActionButton = ({ buttons }) => {
+function ActionButton({ buttons }) {
   return (
     <div className="actions">
       {buttons.map((button, index) => (
@@ -11,7 +11,7 @@ const ActionButton = ({ buttons }) => {
       ))}
     </div>
   );
-};
+}
 
 ActionButton.propTypes = {
   buttons: PropTypes.arrayOf(

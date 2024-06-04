@@ -94,7 +94,7 @@ const Message = styled.p`
   text-align: center;
 `;
 
-const ForgotPassword = () => {
+function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -122,8 +122,7 @@ const ForgotPassword = () => {
               placeholder="Digite seu e-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+              required />
             {message && <Message>{message}</Message>}
             <ButtonContainer>
               <Button type="button" onClick={handleBackToLogin}>
@@ -136,6 +135,6 @@ const ForgotPassword = () => {
       </Container>
     </ForgotPasswordPage>
   );
-};
+}
 
 export default ForgotPassword;

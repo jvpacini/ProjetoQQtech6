@@ -6,7 +6,7 @@ import ActionButtons from "../components/ActionButtons";
 import "./Dashboard.css";
 import SideBar from "../components/SideBar";
 
-const ModuleDashboard = () => {
+function ModuleDashboard() {
   const [modules, setModules] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredModules, setFilteredModules] = useState([]);
@@ -24,8 +24,7 @@ const ModuleDashboard = () => {
 
   useEffect(() => {
     setFilteredModules(
-      modules.filter((mod) =>
-        mod.nome.toLowerCase().includes(searchTerm.toLowerCase())
+      modules.filter((mod) => mod.nome.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [modules, searchTerm]);
@@ -53,12 +52,11 @@ const ModuleDashboard = () => {
       <DynamicTable
         columns={moduleColumns}
         data={filteredModules}
-        maxRows={10}
-      />
+        maxRows={10} />
       <Pagination />
       <ActionButtons buttons={moduleButtons} />
     </div>
   );
-};
+}
 
 export default ModuleDashboard;
