@@ -1,9 +1,9 @@
 import SideBar from "../components/SideBar";
 
-const Dashboard = () => {
+function Dashboard() {
   return (
     <SideBar />
   );
-};
+}
 
 export default Dashboard;

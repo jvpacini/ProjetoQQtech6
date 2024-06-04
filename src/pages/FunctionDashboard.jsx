@@ -7,7 +7,7 @@ import Dropdown from "../components/Dropdown";
 import SideBar from "../components/SideBar";
 import "./Dashboard.css";
 
-const FunctionDashboard = () => {
+function FunctionDashboard() {
   console.log("FunctionDashboard.jsx");
   const [functions, setFunctions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -30,8 +30,7 @@ const FunctionDashboard = () => {
   useEffect(() => {
     setFilteredFunctions(
       functions.filter(
-        (func) =>
-          func.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (func) => func.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (selectedModule === "" || func.modulo === selectedModule)
       )
     );
@@ -62,17 +61,15 @@ const FunctionDashboard = () => {
         options={allModules}
         selectedOption={selectedModule}
         onSelect={setSelectedModule}
-        placeholder="Todos os módulos"
-      />
+        placeholder="Todos os módulos" />
       <DynamicTable
         columns={functionColumns}
         data={filteredFunctions}
-        maxRows={10}
-      />
+        maxRows={10} />
       <Pagination />
       <ActionButtons buttons={functionButtons} />
     </div>
   );
-};
+}
 
 export default FunctionDashboard;

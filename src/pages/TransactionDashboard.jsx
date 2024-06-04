@@ -7,7 +7,7 @@ import Dropdown from "../components/Dropdown";
 import SideBar from "../components/SideBar";
 import "./Dashboard.css";
 
-const TransactionDashboard = () => {
+function TransactionDashboard() {
   const [transactions, setTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedModule, setSelectedModule] = useState("");
@@ -31,8 +31,7 @@ const TransactionDashboard = () => {
   useEffect(() => {
     setFilteredTransactions(
       transactions.filter(
-        (transaction) =>
-          transaction.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (transaction) => transaction.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (selectedModule === "" ||
             transaction.moduloAssociado === selectedModule)
       )
@@ -67,17 +66,15 @@ const TransactionDashboard = () => {
         options={allModules}
         selectedOption={selectedModule}
         onSelect={setSelectedModule}
-        placeholder="Todos os módulos"
-      />
+        placeholder="Todos os módulos" />
       <DynamicTable
         columns={transactionColumns}
         data={filteredTransactions}
-        maxRows={10}
-      />
+        maxRows={10} />
       <Pagination />
       <ActionButtons buttons={transactionButtons} />
     </div>
   );
-};
+}
 
 export default TransactionDashboard;

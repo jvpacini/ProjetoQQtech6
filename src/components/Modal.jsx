@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import "./Modal.css";
 
-const Modal = ({ isVisible, onClose, title, children, onConfirm }) => {
+function Modal({ isVisible, onClose, title, children, onConfirm }) {
   if (!isVisible) return null;
 
   return (
@@ -20,7 +20,7 @@ const Modal = ({ isVisible, onClose, title, children, onConfirm }) => {
       </div>
     </div>
   );
-};
+}
 
 Modal.propTypes = {
   isVisible: PropTypes.bool.isRequired,

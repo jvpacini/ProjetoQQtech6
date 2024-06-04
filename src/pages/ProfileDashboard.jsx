@@ -7,7 +7,7 @@ import Dropdown from "../components/Dropdown";
 import SideBar from "../components/SideBar";
 import "./Dashboard.css";
 
-const ProfileDashboard = () => {
+function ProfileDashboard() {
   const [profiles, setProfiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProfile, setSelectedProfile] = useState("");
@@ -31,8 +31,7 @@ const ProfileDashboard = () => {
   useEffect(() => {
     setFilteredProfiles(
       profiles.filter(
-        (profile) =>
-          profile.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (profile) => profile.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
           (selectedProfile === "" ||
             profile.perfilAssociado === selectedProfile)
       )
@@ -71,17 +70,15 @@ const ProfileDashboard = () => {
         options={allProfileNames}
         selectedOption={selectedProfile}
         onSelect={setSelectedProfile}
-        placeholder="Todos os perfis"
-      />
+        placeholder="Todos os perfis" />
       <DynamicTable
         columns={profileColumns}
         data={filteredProfiles}
-        maxRows={10}
-      />
+        maxRows={10} />
       <Pagination />
       <ActionButtons buttons={profileButtons} />
     </div>
   );
-};
+}
 
 export default ProfileDashboard;
