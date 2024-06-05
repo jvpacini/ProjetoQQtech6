@@ -9,16 +9,17 @@ import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import "./Dashboard.css";
 
-function UserDashboard({ searchTerm, onSearch }) {
+const UserDashboard = ({ searchTerm, onSearch }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    fetch("/api/users")
+    fetch("http://localhost:8000/users")
       .then((response) => response.json())
       .then((data) => {
         setUsers(data);
+        setFilteredUsers(data); // Inicialmente, todos os usuários são exibidos
       })
       .catch((error) => console.error("Erro ao carregar usuários:", error));
   }, []);
@@ -87,7 +88,7 @@ function UserDashboard({ searchTerm, onSearch }) {
       </Modal>
     </div>
   );
-}
+};
 
 UserDashboard.propTypes = {
   searchTerm: PropTypes.string.isRequired,

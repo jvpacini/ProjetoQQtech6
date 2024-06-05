@@ -1,84 +1,95 @@
 import { useState, useEffect } from "react";
-import SearchBar from "../components/SearchBar";
+import PropTypes from "prop-types";
 import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
-import Dropdown from "../components/Dropdown";
+import Modal from "../components/Modal";
+import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
+import SearchBar from "../components/SearchBar";
 import "./Dashboard.css";
 
-function ProfileDashboard() {
+const ProfileDashboard = ({ searchTerm, onSearch }) => {
   const [profiles, setProfiles] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedProfile, setSelectedProfile] = useState("");
   const [filteredProfiles, setFilteredProfiles] = useState([]);
-  const [allProfileNames, setAllProfileNames] = useState([]);
-  const [profileNames, setProfileNames] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    fetch("/api/profiles")
+    fetch("http://localhost:8000/perfis")
       .then((response) => response.json())
       .then((data) => {
         setProfiles(data);
-        setProfileNames(data.map((profile) => profile.nome));
-        setAllProfileNames([
-          ...new Set(data.map((profile) => profile.perfilAssociado)),
-        ]);
+        setFilteredProfiles(data);
       })
       .catch((error) => console.error("Erro ao carregar perfis:", error));
   }, []);
 
   useEffect(() => {
     setFilteredProfiles(
-      profiles.filter(
-        (profile) => profile.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          (selectedProfile === "" ||
-            profile.perfilAssociado === selectedProfile)
+      profiles.filter((profile) =>
+        profile.nome.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-  }, [profiles, searchTerm, selectedProfile]);
+  }, [profiles, searchTerm]);
+
+  const handleAddProfileClick = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleConfirm = () => {
+    // Adicione a lógica de confirmação aqui
+    setIsModalVisible(false);
+  };
 
   const profileButtons = [
-    {
-      text: "Adicionar relação",
-      onClick: () => console.log("Adicionar relação"),
-    },
-    {
-      text: "Desfazer relação",
-      onClick: () => console.log("Desfazer relação"),
-    },
-    { text: "Editar", onClick: () => console.log("Editar") },
-    { text: "Ver perfis", onClick: () => console.log("Ver perfis") },
-    {
-      text: "Criação de perfil",
-      onClick: () => console.log("Criação de perfil"),
-    },
-    { text: "Excluir perfil", onClick: () => console.log("Excluir perfil") },
+    { text: "Adicionar perfil", onClick: handleAddProfileClick },
+    { text: "Remover perfil", onClick: () => console.log("Remover perfil") },
+    { text: "Editar", onClick: () => console.log("Editar perfil") },
   ];
 
   const profileColumns = [
-    { header: "Nome do usuário", field: "nome" },
-    { header: "Perfil associado", field: "perfilAssociado" },
+    { header: "Nome do perfil", field: "nome" },
+    { header: "Módulos associados", field: "modulos" },
   ];
 
   return (
     <div className="content">
-      <h1>Perfis</h1>
       <SideBar />
-      <SearchBar data={profileNames} onSearch={setSearchTerm} />
-      <Dropdown
-        options={allProfileNames}
-        selectedOption={selectedProfile}
-        onSelect={setSelectedProfile}
-        placeholder="Todos os perfis" />
-      <DynamicTable
-        columns={profileColumns}
-        data={filteredProfiles}
-        maxRows={10} />
-      <Pagination />
-      <ActionButtons buttons={profileButtons} />
+        <h1>Perfis</h1>
+        <SearchBar data={[]} onSearch={onSearch} />
+        <DynamicTable columns={profileColumns} data={filteredProfiles} maxRows={10} />
+        <Pagination />
+        <ActionButtons buttons={profileButtons} />
+        <Cover isVisible={isModalVisible} onClose={handleModalClose} />
+        <Modal
+          isVisible={isModalVisible}
+          onClose={handleModalClose}
+          title="Cadastro de perfil"
+          onConfirm={handleConfirm}
+        >
+          <form>
+            <input type="text" placeholder="Nome do perfil" required />
+            <select required>
+              <option value="" disabled selected>
+                Módulos
+              </option>
+              <option value="CA">Cadastro</option>
+              <option value="DG">Digitalização</option>
+              {/* Adicione outras opções conforme necessário */}
+            </select>
+          </form>
+        </Modal>
     </div>
   );
-}
+};
+
+ProfileDashboard.propTypes = {
+  searchTerm: PropTypes.string.isRequired,
+  onSearch: PropTypes.func.isRequired,
+};
 
 export default ProfileDashboard;

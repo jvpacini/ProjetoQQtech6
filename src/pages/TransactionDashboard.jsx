@@ -1,48 +1,52 @@
 import { useState, useEffect } from "react";
-import SearchBar from "../components/SearchBar";
+import PropTypes from "prop-types";
 import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
-import Dropdown from "../components/Dropdown";
+import Modal from "../components/Modal";
+import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
+import SearchBar from "../components/SearchBar";
 import "./Dashboard.css";
 
-function TransactionDashboard() {
+const TransactionDashboard = ({ searchTerm, onSearch }) => {
   const [transactions, setTransactions] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedModule, setSelectedModule] = useState("");
   const [filteredTransactions, setFilteredTransactions] = useState([]);
-  const [allModules, setAllModules] = useState([]);
-  const [transactionNames, setTransactionNames] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
-    fetch("/api/transactions")
+    fetch("http://localhost:8000/transacoes")
       .then((response) => response.json())
       .then((data) => {
         setTransactions(data);
-        setTransactionNames(data.map((transaction) => transaction.nome));
-        setAllModules([
-          ...new Set(data.map((transaction) => transaction.moduloAssociado)),
-        ]);
+        setFilteredTransactions(data);
       })
       .catch((error) => console.error("Erro ao carregar transações:", error));
   }, []);
 
   useEffect(() => {
     setFilteredTransactions(
-      transactions.filter(
-        (transaction) => transaction.nome.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          (selectedModule === "" ||
-            transaction.moduloAssociado === selectedModule)
+      transactions.filter((transaction) =>
+        transaction.nome.toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
-  }, [transactions, searchTerm, selectedModule]);
+  }, [transactions, searchTerm]);
+
+  const handleAddTransactionClick = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleConfirm = () => {
+    // Adicione a lógica de confirmação aqui
+    setIsModalVisible(false);
+  };
 
   const transactionButtons = [
-    {
-      text: "Adicionar transação",
-      onClick: () => console.log("Adicionar transação"),
-    },
+    { text: "Adicionar transação", onClick: handleAddTransactionClick },
     {
       text: "Remover transação",
       onClick: () => console.log("Remover transação"),
@@ -51,30 +55,41 @@ function TransactionDashboard() {
   ];
 
   const transactionColumns = [
-    { header: "ID", field: "id" },
+    { header: "Código", field: "codigo" },
     { header: "Nome", field: "nome" },
-    { header: "Descrição", field: "descricao" },
-    { header: "Módulo associado", field: "moduloAssociado" },
   ];
 
   return (
     <div className="content">
-      <h1>Transações</h1>
       <SideBar />
-      <SearchBar data={transactionNames} onSearch={setSearchTerm} />
-      <Dropdown
-        options={allModules}
-        selectedOption={selectedModule}
-        onSelect={setSelectedModule}
-        placeholder="Todos os módulos" />
+      <h1>Transações</h1>
+      <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={transactionColumns}
         data={filteredTransactions}
-        maxRows={10} />
+        maxRows={10}
+      />
       <Pagination />
       <ActionButtons buttons={transactionButtons} />
+      <Cover isVisible={isModalVisible} onClose={handleModalClose} />
+      <Modal
+        isVisible={isModalVisible}
+        onClose={handleModalClose}
+        title="Cadastro de transação"
+        onConfirm={handleConfirm}
+      >
+        <form>
+          <input type="text" placeholder="Código" required />
+          <input type="text" placeholder="Nome" required />
+        </form>
+      </Modal>
     </div>
   );
-}
+};
+
+TransactionDashboard.propTypes = {
+  searchTerm: PropTypes.string.isRequired,
+  onSearch: PropTypes.func.isRequired,
+};
 
 export default TransactionDashboard;

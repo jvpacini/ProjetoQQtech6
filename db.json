@@ -1,16 +1,6 @@
 {
   "users": [
     {
-      "id": 1,
-      "username": "teste1",
-      "password": "senha1"
-    },
-    {
-      "id": 2,
-      "username": "teste2",
-      "password": "senha2"
-    },
-    {
       "id": "136396",
       "nome": "TESTE 1",
       "email": "teste1@example.com",
