@@ -102,9 +102,9 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         <form>
           <input type="text" placeholder="Nome completo" required />
           <input type="email" placeholder="E-mail" required />
-          <CustomMultiSelect 
-            fetchUrl="http://localhost:8000/perfis" 
-            placeholder="Perfil" 
+          <CustomMultiSelect
+            placeholder="Perfis"
+            fetchUrl="http://localhost:8000/perfis"
             onChange={(selected) => console.log(selected)}
           />
           <input type="password" placeholder="Senha" required />
