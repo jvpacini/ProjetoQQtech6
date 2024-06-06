@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types';
-import './Dropdown.css';
+import PropTypes from "prop-types";
+import "./Dropdown.css";
 
-function Dropdown({ options, selectedOption, onSelect, placeholder }) {
+const Dropdown = ({ options, selectedOption, onSelect, placeholder }) => {
   return (
     <select
       className="form-select"
@@ -16,7 +16,7 @@ function Dropdown({ options, selectedOption, onSelect, placeholder }) {
       ))}
     </select>
   );
-}
+};
 
 Dropdown.propTypes = {
   options: PropTypes.arrayOf(PropTypes.string).isRequired,
@@ -26,7 +26,7 @@ Dropdown.propTypes = {
 };
 
 Dropdown.defaultProps = {
-  placeholder: 'Select an option',
+  placeholder: "Selecione uma opção",
 };
 
 export default Dropdown;

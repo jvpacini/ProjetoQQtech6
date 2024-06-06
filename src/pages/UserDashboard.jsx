@@ -7,11 +7,14 @@ import Modal from "../components/Modal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
-import "./Dashboard.css";
+import Dropdown from "../components/Dropdown";
+import CustomMultiSelect from "../components/CustomMultiSelect";
 
 const UserDashboard = ({ searchTerm, onSearch }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
@@ -22,15 +25,30 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         setFilteredUsers(data); // Inicialmente, todos os usuários são exibidos
       })
       .catch((error) => console.error("Erro ao carregar usuários:", error));
+
+    fetch("http://localhost:8000/perfis")
+      .then((response) => response.json())
+      .then((data) => {
+        setProfiles(data);
+      })
+      .catch((error) => console.error("Erro ao carregar perfis:", error));
   }, []);
 
   useEffect(() => {
-    setFilteredUsers(
-      users.filter((user) =>
+    let filtered = users;
+
+    if (searchTerm) {
+      filtered = filtered.filter((user) =>
         user.nome.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [users, searchTerm]);
+      );
+    }
+
+    if (selectedProfile) {
+      filtered = filtered.filter((user) => user.perfil === selectedProfile);
+    }
+
+    setFilteredUsers(filtered);
+  }, [users, searchTerm, selectedProfile]);
 
   const handleAddUserClick = () => {
     setIsModalVisible(true);
@@ -40,8 +58,9 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
     setIsModalVisible(false);
   };
 
-  const handleConfirm = () => {
-    // Adicione a lógica de confirmação aqui
+  const handleConfirm = (selectedProfiles) => {
+    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    console.log("Perfis selecionados:", selectedProfiles);
     setIsModalVisible(false);
   };
 
@@ -60,9 +79,15 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
   return (
     <div className="content">
-      <h1>Usuários</h1>
       <SideBar />
+      <h1>Usuários</h1>
       <SearchBar data={[]} onSearch={onSearch} />
+      <Dropdown
+        options={profiles.map((profile) => profile.nome)}
+        selectedOption={selectedProfile}
+        onSelect={setSelectedProfile}
+        placeholder="Todos os perfis"
+      />
       <DynamicTable columns={userColumns} data={filteredUsers} maxRows={10} />
       <Pagination />
       <ActionButtons buttons={userButtons} />
@@ -72,17 +97,16 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         onClose={handleModalClose}
         title="Cadastro de usuário"
         onConfirm={handleConfirm}
+        fetchUrl="http://localhost:8000/perfis"
       >
         <form>
           <input type="text" placeholder="Nome completo" required />
           <input type="email" placeholder="E-mail" required />
-          <select required>
-            <option value="" disabled selected>
-              Perfil
-            </option>
-            <option value="admin">Admin</option>
-            <option value="user">User</option>
-          </select>
+          <CustomMultiSelect 
+            fetchUrl="http://localhost:8000/perfis" 
+            placeholder="Perfil" 
+            onChange={(selected) => console.log(selected)}
+          />
           <input type="password" placeholder="Senha" required />
         </form>
       </Modal>

@@ -2,7 +2,12 @@ import PropTypes from "prop-types";
 import "./DynamicTable.css";
 
 function DynamicTable({ columns, data, maxRows }) {
-  const displayedData = maxRows ? data.slice(0, maxRows) : data;
+  const formatCellData = (cellData) => {
+    if (Array.isArray(cellData)) {
+      return cellData.join(", ");
+    }
+    return cellData;
+  };
 
   return (
     <table className="dynamic-table">
@@ -14,10 +19,10 @@ function DynamicTable({ columns, data, maxRows }) {
         </tr>
       </thead>
       <tbody>
-        {displayedData.map((row, rowIndex) => (
+        {data.slice(0, maxRows).map((row, rowIndex) => (
           <tr key={rowIndex}>
-            {columns.map((column, colIndex) => (
-              <td key={colIndex}>{row[column.field]}</td>
+            {columns.map((col, colIndex) => (
+              <td key={colIndex}>{formatCellData(row[col.field])}</td>
             ))}
           </tr>
         ))}

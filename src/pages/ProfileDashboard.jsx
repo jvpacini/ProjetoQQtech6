@@ -7,11 +7,13 @@ import Modal from "../components/Modal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
-import "./Dashboard.css";
+import Dropdown from "../components/Dropdown";
 
 const ProfileDashboard = ({ searchTerm, onSearch }) => {
   const [profiles, setProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
+  const [modules, setModules] = useState([]);
+  const [selectedModule, setSelectedModule] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
@@ -19,18 +21,35 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
       .then((response) => response.json())
       .then((data) => {
         setProfiles(data);
-        setFilteredProfiles(data);
+        setFilteredProfiles(data); // Inicialmente, todos os perfis são exibidos
       })
       .catch((error) => console.error("Erro ao carregar perfis:", error));
+
+    fetch("http://localhost:8000/modulos")
+      .then((response) => response.json())
+      .then((data) => {
+        setModules(data);
+      })
+      .catch((error) => console.error("Erro ao carregar módulos:", error));
   }, []);
 
   useEffect(() => {
-    setFilteredProfiles(
-      profiles.filter((profile) =>
+    let filtered = profiles;
+
+    if (searchTerm) {
+      filtered = filtered.filter((profile) =>
         profile.nome.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [profiles, searchTerm]);
+      );
+    }
+
+    if (selectedModule) {
+      filtered = filtered.filter((profile) =>
+        profile.modulos.includes(selectedModule)
+      );
+    }
+
+    setFilteredProfiles(filtered);
+  }, [profiles, searchTerm, selectedModule]);
 
   const handleAddProfileClick = () => {
     setIsModalVisible(true);
@@ -59,30 +78,33 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   return (
     <div className="content">
       <SideBar />
-        <h1>Perfis</h1>
-        <SearchBar data={[]} onSearch={onSearch} />
-        <DynamicTable columns={profileColumns} data={filteredProfiles} maxRows={10} />
-        <Pagination />
-        <ActionButtons buttons={profileButtons} />
-        <Cover isVisible={isModalVisible} onClose={handleModalClose} />
-        <Modal
-          isVisible={isModalVisible}
-          onClose={handleModalClose}
-          title="Cadastro de perfil"
-          onConfirm={handleConfirm}
-        >
-          <form>
-            <input type="text" placeholder="Nome do perfil" required />
-            <select required>
-              <option value="" disabled selected>
-                Módulos
-              </option>
-              <option value="CA">Cadastro</option>
-              <option value="DG">Digitalização</option>
-              {/* Adicione outras opções conforme necessário */}
-            </select>
-          </form>
-        </Modal>
+      <h1>Perfis</h1>
+      <SearchBar data={[]} onSearch={onSearch} />
+      <Dropdown
+        options={modules.map((module) => module.codigo)}
+        selectedOption={selectedModule}
+        onSelect={setSelectedModule}
+        placeholder="Todos os módulos"
+      />
+      <DynamicTable
+        columns={profileColumns}
+        data={filteredProfiles}
+        maxRows={10}
+      />
+      <Pagination />
+      <ActionButtons buttons={profileButtons} />
+      <Cover isVisible={isModalVisible} onClose={handleModalClose} />
+      <Modal
+        isVisible={isModalVisible}
+        onClose={handleModalClose}
+        title="Cadastro de perfil"
+        onConfirm={handleConfirm}
+      >
+        <form>
+          <input type="text" placeholder="Nome do perfil" required />
+          <input type="text" placeholder="Módulos associados" required />
+        </form>
+      </Modal>
     </div>
   );
 };
