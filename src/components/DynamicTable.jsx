@@ -1,9 +1,10 @@
 import PropTypes from "prop-types";
-import { useState, useEffect } from "react";
 import "./DynamicTable.css";
+import { useState, useEffect, useRef } from "react";
 
-function DynamicTable({ columns, data, maxRows, onRowSelect }) {
+function DynamicTable({ columns, data, maxRows, onRowClick }) {
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const tableRef = useRef(null);
 
   const formatCellData = (cellData) => {
     if (Array.isArray(cellData)) {
@@ -12,32 +13,26 @@ function DynamicTable({ columns, data, maxRows, onRowSelect }) {
     return cellData;
   };
 
-  const handleRowClick = (rowIndex) => {
+  const handleRowClick = (rowIndex, row) => {
     setSelectedRowIndex(rowIndex);
-    if (onRowSelect) {
-      onRowSelect(data[rowIndex]);
-    }
+    onRowClick(row);
   };
 
   const handleClickOutside = (event) => {
-    if (!event.target.closest(".dynamic-table")) {
+    if (tableRef.current && !tableRef.current.contains(event.target)) {
       setSelectedRowIndex(null);
-      if (onRowSelect) {
-        onRowSelect(null);
-      }
     }
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   return (
-    <table className="dynamic-table">
+    <table className="dynamic-table" ref={tableRef}>
       <thead>
         <tr>
           {columns.map((column, index) => (
@@ -49,8 +44,8 @@ function DynamicTable({ columns, data, maxRows, onRowSelect }) {
         {data.slice(0, maxRows).map((row, rowIndex) => (
           <tr
             key={rowIndex}
-            className={rowIndex === selectedRowIndex ? "selected-row" : ""}
-            onClick={() => handleRowClick(rowIndex)}
+            className={rowIndex === selectedRowIndex ? "selected" : ""}
+            onClick={() => handleRowClick(rowIndex, row)}
           >
             {columns.map((col, colIndex) => (
               <td key={colIndex}>{formatCellData(row[col.field])}</td>
@@ -71,7 +66,7 @@ DynamicTable.propTypes = {
   ).isRequired,
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   maxRows: PropTypes.number,
-  onRowSelect: PropTypes.func,
+  onRowClick: PropTypes.func.isRequired,
 };
 
 export default DynamicTable;

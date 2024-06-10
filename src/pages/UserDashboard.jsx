@@ -4,6 +4,8 @@ import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
 import Modal from "../components/Modal";
+import DeleteModal from "../components/DeleteModal";
+import EditModal from "../components/EditModal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
@@ -15,7 +17,10 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [profiles, setProfiles] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState("");
+  const [selectedRow, setSelectedRow] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:8000/users")
@@ -54,20 +59,82 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
     setIsModalVisible(true);
   };
 
+  const handleRemoveUserClick = () => {
+    if (selectedRow) {
+      setIsDeleteModalVisible(true);
+    } else {
+      alert("Por favor, selecione um usuário para remover.");
+    }
+  };
+
+  const handleEditUserClick = () => {
+    if (selectedRow) {
+      setIsEditModalVisible(true);
+    } else {
+      alert("Por favor, selecione um usuário para editar.");
+    }
+  };
+
   const handleModalClose = () => {
     setIsModalVisible(false);
   };
 
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalVisible(false);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalVisible(false);
+  };
+
   const handleConfirm = (selectedProfiles) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // Lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Perfis selecionados:", selectedProfiles);
     setIsModalVisible(false);
   };
 
+  const handleDeleteConfirm = () => {
+    // Lógica de exclusão aqui
+    if (selectedRow) {
+      fetch(`http://localhost:8000/users/${selectedRow.id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            setUsers(users.filter((user) => user.id !== selectedRow.id));
+            setSelectedRow(null);
+          }
+        })
+        .catch((error) => console.error("Erro ao deletar usuário:", error));
+    }
+    setIsDeleteModalVisible(false);
+  };
+
+  const handleEditConfirm = (updatedUser) => {
+    // Adicione a lógica de atualização aqui
+    fetch(`http://localhost:8000/users/${updatedUser.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUser),
+    })
+      .then((response) => {
+        if (response.ok) {
+          setUsers(
+            users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+          );
+          setSelectedRow(null);
+        }
+      })
+      .catch((error) => console.error("Erro ao atualizar usuário:", error));
+    setIsEditModalVisible(false);
+  };
+
   const userButtons = [
     { text: "Adicionar usuário", onClick: handleAddUserClick },
-    { text: "Remover usuário", onClick: () => console.log("Remover usuário") },
-    { text: "Editar", onClick: () => console.log("Editar usuário") },
+    { text: "Remover usuário", onClick: handleRemoveUserClick },
+    { text: "Editar", onClick: handleEditUserClick },
   ];
 
   const userColumns = [
@@ -88,10 +155,15 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         onSelect={setSelectedProfile}
         placeholder="Todos os perfis"
       />
-      <DynamicTable columns={userColumns} data={filteredUsers} maxRows={10} />
+      <DynamicTable
+        columns={userColumns}
+        data={filteredUsers}
+        maxRows={10}
+        onRowClick={(row) => setSelectedRow(row)}
+      />
       <Pagination />
       <ActionButtons buttons={userButtons} />
-      <Cover isVisible={isModalVisible} onClose={handleModalClose} />
+      <Cover isVisible={isModalVisible || isDeleteModalVisible || isEditModalVisible} onClose={handleModalClose} />
       <Modal
         isVisible={isModalVisible}
         onClose={handleModalClose}
@@ -110,6 +182,27 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
           <input type="password" placeholder="Senha" required />
         </form>
       </Modal>
+      <DeleteModal
+        isVisible={isDeleteModalVisible}
+        onClose={handleDeleteModalClose}
+        title="Confirmação de Exclusão"
+        onConfirm={handleDeleteConfirm}
+        fields={
+          selectedRow
+            ? [
+                { label: "Nome", value: selectedRow.nome },
+                { label: "Email", value: selectedRow.email },
+              ]
+            : []
+        }
+      />
+      <EditModal
+        isVisible={isEditModalVisible}
+        onClose={handleEditModalClose}
+        title="Editar usuário"
+        onConfirm={handleEditConfirm}
+        userData={selectedRow}
+      />
     </div>
   );
 };

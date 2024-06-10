@@ -7,33 +7,40 @@ const MultiSelectContainer = styled.div`
   margin-bottom: 15px;
 `;
 
-const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
+const CustomMultiSelect = ({ fetchUrl, placeholder, onChange, initialSelected }) => {
   const [options, setOptions] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [selected, setSelected] = useState(initialSelected || []);
 
   useEffect(() => {
     fetch(fetchUrl)
       .then((response) => response.json())
       .then((data) => {
-        const optionsData = data.map((item) => ({
+        const formattedOptions = data.map((item) => ({
           label: item.nome,
           value: item.nome,
         }));
-        setOptions(optionsData);
+        setOptions(formattedOptions);
       })
-      .catch((error) => console.error("Erro ao carregar opções:", error));
+      .catch((error) => console.error("Erro ao carregar dados:", error));
   }, [fetchUrl]);
 
   useEffect(() => {
-    onChange(selected.map((item) => item.value));
-  }, [selected, onChange]);
+    if (initialSelected) {
+      setSelected(initialSelected.map(item => ({ label: item, value: item })));
+    }
+  }, [initialSelected]);
+
+  const handleChange = (selectedOptions) => {
+    setSelected(selectedOptions);
+    onChange(selectedOptions.map(option => option.value));
+  };
 
   return (
     <MultiSelectContainer>
       <MultiSelect
         options={options}
         value={selected}
-        onChange={setSelected}
+        onChange={handleChange}
         labelledBy={placeholder}
       />
     </MultiSelectContainer>
@@ -42,8 +49,9 @@ const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
 
 CustomMultiSelect.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
-  placeholder: PropTypes.string,
+  placeholder: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
+  initialSelected: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default CustomMultiSelect;
