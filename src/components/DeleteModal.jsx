@@ -18,7 +18,7 @@ const ModalContainer = styled.div`
 
 const ModalTitle = styled.h2`
   margin-top: 0;
-  font-family: 'Outfit', sans-serif;
+  font-family: "Outfit", sans-serif;
   font-weight: 700;
   font-size: 24px;
   color: #333;
@@ -26,39 +26,51 @@ const ModalTitle = styled.h2`
   margin-bottom: 20px;
 `;
 
-const ModalForm = styled.div`
+const ModalForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
 `;
 
 const ModalField = styled.div`
+  margin-bottom: 15px;
+`;
+
+const FieldLabel = styled.label`
+  font-weight: bold;
+  margin-bottom: 5px;
+`;
+
+const FieldValue = styled.span`
+  display: block;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #ada8a8;
+  background-color: #fff;
 `;
 
-const ModalActions = styled.div`
+const FormActions = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
 `;
 
-const ModalButton = styled.button`
+const ActionButton = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   background-color: #d9d9d9;
   color: #333;
   cursor: pointer;
-
   &:hover {
     background-color: #c4c4c4;
   }
 `;
 
-const DeleteModal = ({ isVisible, onClose, title, onConfirm, fields }) => {
+const DeleteModal = ({ isVisible, onClose, title, fields, onConfirm }) => {
+  const handleConfirm = () => {
+    onConfirm();
+    onClose();
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -67,14 +79,19 @@ const DeleteModal = ({ isVisible, onClose, title, onConfirm, fields }) => {
       <ModalForm>
         {fields.map((field, index) => (
           <ModalField key={index}>
-            <strong>{field.label}:</strong> {field.value}
+            <FieldLabel>{field.label}</FieldLabel>
+            <FieldValue>{field.value}</FieldValue>
           </ModalField>
         ))}
+        <FormActions>
+          <ActionButton type="button" onClick={onClose}>
+            Voltar
+          </ActionButton>
+          <ActionButton type="button" onClick={handleConfirm}>
+            Confirmar
+          </ActionButton>
+        </FormActions>
       </ModalForm>
-      <ModalActions>
-        <ModalButton onClick={onClose}>Voltar</ModalButton>
-        <ModalButton onClick={onConfirm}>Confirmar</ModalButton>
-      </ModalActions>
     </ModalContainer>
   );
 };
@@ -83,13 +100,13 @@ DeleteModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  onConfirm: PropTypes.func.isRequired,
   fields: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       value: PropTypes.string.isRequired,
     })
   ).isRequired,
+  onConfirm: PropTypes.func.isRequired,
 };
 
 export default DeleteModal;

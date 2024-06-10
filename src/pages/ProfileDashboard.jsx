@@ -3,18 +3,21 @@ import PropTypes from "prop-types";
 import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
-import Modal from "../components/Modal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import Dropdown from "../components/Dropdown";
+import EditProfileModal from "../components/EditProfileModal";
+import AddProfileModal from "../components/AddProfileModal";
 
 const ProfileDashboard = ({ searchTerm, onSearch }) => {
   const [profiles, setProfiles] = useState([]);
   const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [modules, setModules] = useState([]);
   const [selectedModule, setSelectedModule] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [selectedProfile, setSelectedProfile] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/perfis")
@@ -52,28 +55,48 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   }, [profiles, searchTerm, selectedModule]);
 
   const handleAddProfileClick = () => {
-    setIsModalVisible(true);
+    setIsAddModalVisible(true);
+  };
+
+  const handleEditProfileClick = () => {
+    if (selectedProfile) {
+      setIsEditModalVisible(true);
+    } else {
+      console.error("Nenhum perfil selecionado");
+    }
   };
 
   const handleModalClose = () => {
-    setIsModalVisible(false);
+    setIsEditModalVisible(false);
+    setIsAddModalVisible(false);
   };
 
-  const handleConfirm = () => {
-    // Adicione a lógica de confirmação aqui
-    setIsModalVisible(false);
+  const handleConfirmAdd = (newProfile) => {
+    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    console.log("Novo perfil:", newProfile);
+    setIsAddModalVisible(false);
+  };
+
+  const handleConfirmEdit = (updatedProfile) => {
+    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    console.log("Perfil atualizado:", updatedProfile);
+    setIsEditModalVisible(false);
   };
 
   const profileButtons = [
     { text: "Adicionar perfil", onClick: handleAddProfileClick },
     { text: "Remover perfil", onClick: () => console.log("Remover perfil") },
-    { text: "Editar", onClick: () => console.log("Editar perfil") },
+    { text: "Editar", onClick: handleEditProfileClick },
   ];
 
   const profileColumns = [
-    { header: "Nome do perfil", field: "nome" },
-    { header: "Módulos associados", field: "modulos" },
+    { header: "Nome", field: "nome" },
+    { header: "Módulos", field: "modulos" },
   ];
+
+  const handleRowClick = (rowData) => {
+    setSelectedProfile(rowData);
+  };
 
   return (
     <div className="content">
@@ -90,21 +113,29 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
         columns={profileColumns}
         data={filteredProfiles}
         maxRows={10}
+        onRowClick={handleRowClick}
       />
       <Pagination />
       <ActionButtons buttons={profileButtons} />
-      <Cover isVisible={isModalVisible} onClose={handleModalClose} />
-      <Modal
-        isVisible={isModalVisible}
+      <Cover
+        isVisible={isEditModalVisible || isAddModalVisible}
         onClose={handleModalClose}
-        title="Cadastro de perfil"
-        onConfirm={handleConfirm}
-      >
-        <form>
-          <input type="text" placeholder="Nome do perfil" required />
-          <input type="text" placeholder="Módulos associados" required />
-        </form>
-      </Modal>
+      />
+      <EditProfileModal
+        isVisible={isEditModalVisible}
+        onClose={handleModalClose}
+        title="Editar perfil"
+        profile={selectedProfile}
+        onConfirm={handleConfirmEdit}
+        fetchUrl="http://localhost:8000/modulos"
+      />
+      <AddProfileModal
+        isVisible={isAddModalVisible}
+        onClose={handleModalClose}
+        title="Adicionar perfil"
+        onConfirm={handleConfirmAdd}
+        fetchUrl="http://localhost:8000/modulos"
+      />
     </div>
   );
 };

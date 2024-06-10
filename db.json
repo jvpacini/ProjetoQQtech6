@@ -25,32 +25,104 @@
   "perfis": [
     {
       "nome": "CAIXA VC",
-      "modulos": ["CA", "DG", "FV", "SC", "VC", "VG"]
+      "modulos": [
+        "CA",
+        "DG",
+        "FV",
+        "SC",
+        "VC",
+        "VG"
+      ],
+      "id": "17d8"
     },
     {
       "nome": "ESTABELECIMENTO",
-      "modulos": ["SC", "VC"]
+      "modulos": [
+        "SC",
+        "VC"
+      ],
+      "id": "668a"
     }
   ],
   "modulos": [
-    { "codigo": "CA", "nome": "Cadastro" },
-    { "codigo": "DG", "nome": "Digitalização" },
-    { "codigo": "FV", "nome": "Fichas VerdeCard" },
-    { "codigo": "SC", "nome": "VerdeCard" },
-    { "codigo": "VC", "nome": "Lojista Afiliado" },
-    { "codigo": "VG", "nome": "Controle" }
+    {
+      "codigo": "CA",
+      "nome": "Cadastro",
+      "id": "d759"
+    },
+    {
+      "codigo": "DG",
+      "nome": "Digitalização",
+      "id": "aa02"
+    },
+    {
+      "codigo": "FV",
+      "nome": "Fichas VerdeCard",
+      "id": "d974"
+    },
+    {
+      "codigo": "SC",
+      "nome": "VerdeCard",
+      "id": "f610"
+    },
+    {
+      "codigo": "VC",
+      "nome": "Lojista Afiliado",
+      "id": "8082"
+    },
+    {
+      "codigo": "VG",
+      "nome": "Controle",
+      "id": "df4e"
+    }
   ],
   "transacoes": [
-    { "codigo": "RKPC", "nome": "Risk Price" },
-    { "codigo": "PRFA", "nome": "Produto Fatura" },
-    { "codigo": "DEFO", "nome": "Desconto em Folha" },
-    { "codigo": "PEFI", "nome": "Pessoa Física" },
-    { "codigo": "PEJU", "nome": "Pessoa Jurídica" }
+    {
+      "codigo": "RKPC",
+      "nome": "Risk Price",
+      "id": "a85b"
+    },
+    {
+      "codigo": "PRFA",
+      "nome": "Produto Fatura",
+      "id": "4a09"
+    },
+    {
+      "codigo": "DEFO",
+      "nome": "Desconto em Folha",
+      "id": "a054"
+    },
+    {
+      "codigo": "PEFI",
+      "nome": "Pessoa Física",
+      "id": "1a85"
+    },
+    {
+      "codigo": "PEJU",
+      "nome": "Pessoa Jurídica",
+      "id": "2984"
+    }
   ],
   "funcoes": [
-    { "codigo": "ADAT", "nome": "Adicionar" },
-    { "codigo": "ALTR", "nome": "Alterar" },
-    { "codigo": "RETR", "nome": "Visualizar" },
-    { "codigo": "ADIC", "nome": "Adicionar Restrição" }
+    {
+      "codigo": "ADAT",
+      "nome": "Adicionar",
+      "id": "6167"
+    },
+    {
+      "codigo": "ALTR",
+      "nome": "Alterar",
+      "id": "057a"
+    },
+    {
+      "codigo": "RETR",
+      "nome": "Visualizar",
+      "id": "921a"
+    },
+    {
+      "codigo": "ADIC",
+      "nome": "Adicionar Restrição",
+      "id": "5713"
+    }
   ]
 }

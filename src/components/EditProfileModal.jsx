@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CustomSingleSelect from "./CustomSingleSelect";
+import CustomMultiSelect from "./CustomMultiSelect";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -59,11 +59,33 @@ const ActionButton = styled.button`
   }
 `;
 
-const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
-  const [selectedProfiles, setSelectedProfiles] = useState([]);
+const EditProfileModal = ({
+  isVisible,
+  onClose,
+  title,
+  profile,
+  onConfirm,
+  fetchUrl,
+}) => {
+  const [name, setName] = useState("");
+  const [modules, setModules] = useState([]);
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.nome);
+      setModules(
+        profile.modulos.map((modulo) => ({ value: modulo, label: modulo }))
+      );
+    }
+  }, [profile]);
 
   const handleConfirm = () => {
-    onConfirm(selectedProfiles);
+    const updatedProfile = {
+      ...profile,
+      nome: name,
+      modulos: modules.map((modulo) => modulo.value),
+    };
+    onConfirm(updatedProfile);
     onClose();
   };
 
@@ -73,13 +95,18 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        <ModalInput type="text" placeholder="Nome completo" required />
-        <ModalInput type="email" placeholder="E-mail" required />
-        <ModalInput type="password" placeholder="Senha" required />
-        <CustomSingleSelect
+        <ModalInput
+          type="text"
+          value={name}
+          placeholder="Nome do Perfil"
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <CustomMultiSelect
           fetchUrl={fetchUrl}
-          placeholder="Perfil"
-          onChange={setSelectedProfiles}
+          placeholder="Módulos"
+          onChange={setModules}
+          preSelectedOptions={modules}
         />
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
@@ -94,12 +121,13 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   );
 };
 
-Modal.propTypes = {
+EditProfileModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  profile: PropTypes.object,
   onConfirm: PropTypes.func.isRequired,
   fetchUrl: PropTypes.string.isRequired,
 };
 
-export default Modal;
+export default EditProfileModal;

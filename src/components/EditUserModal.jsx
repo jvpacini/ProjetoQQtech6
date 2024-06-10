@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
+import CustomSingleSelect from "./CustomSingleSelect";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -34,15 +35,6 @@ const ModalForm = styled.form`
 `;
 
 const ModalInput = styled.input`
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: "Roboto", sans-serif;
-`;
-
-const ModalSelect = styled.select`
   width: 100%;
   padding: 10px;
   margin-bottom: 15px;
@@ -112,18 +104,12 @@ const EditModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
           onChange={handleChange}
           required
         />
-        <ModalSelect
-          name="perfil"
-          value={formData.perfil}
+        <CustomSingleSelect
+          fetchUrl="http://localhost:8000/perfis"
+          placeholder="Perfil"
+          selectedValue={formData.perfil}
           onChange={handleChange}
-          required
-        >
-          <option value="" disabled>
-            Perfil
-          </option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-        </ModalSelect>
+        />
         <ModalInput
           type="password"
           name="senha"

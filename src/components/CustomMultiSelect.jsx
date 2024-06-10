@@ -1,57 +1,47 @@
-import { useEffect, useState } from "react";
-import { MultiSelect } from "react-multi-select-component";
-import PropTypes from "prop-types";
-import styled from "styled-components";
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import AsyncSelect from "react-select/async";
 
-const MultiSelectContainer = styled.div`
-  margin-bottom: 15px;
-`;
-
-const CustomMultiSelect = ({ fetchUrl, placeholder, onChange, initialSelected }) => {
+const CustomMultiSelect = ({ fetchUrl, preSelectedOptions }) => {
   const [options, setOptions] = useState([]);
-  const [selected, setSelected] = useState(initialSelected || []);
+  const [selectedOptions, setSelectedOptions] = useState(preSelectedOptions || []);
 
   useEffect(() => {
     fetch(fetchUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        const formattedOptions = data.map((item) => ({
+      .then(response => response.json())
+      .then(data => {
+        const formattedOptions = data.map(item => ({
+          value: item.id,
           label: item.nome,
-          value: item.nome,
         }));
         setOptions(formattedOptions);
       })
-      .catch((error) => console.error("Erro ao carregar dados:", error));
+      .catch(error => console.error('Erro ao carregar opções:', error));
   }, [fetchUrl]);
 
-  useEffect(() => {
-    if (initialSelected) {
-      setSelected(initialSelected.map(item => ({ label: item, value: item })));
-    }
-  }, [initialSelected]);
-
-  const handleChange = (selectedOptions) => {
-    setSelected(selectedOptions);
-    onChange(selectedOptions.map(option => option.value));
+  const handleChange = (selected) => {
+    setSelectedOptions(selected);
   };
 
   return (
-    <MultiSelectContainer>
-      <MultiSelect
-        options={options}
-        value={selected}
-        onChange={handleChange}
-        labelledBy={placeholder}
-      />
-    </MultiSelectContainer>
+    <AsyncSelect
+      isMulti
+      cacheOptions
+      defaultOptions={options}
+      value={selectedOptions}
+      loadOptions={(inputValue, callback) => {
+        setTimeout(() => {
+          callback(options.filter(option => option.label.toLowerCase().includes(inputValue.toLowerCase())));
+        }, 1000);
+      }}
+      onChange={handleChange}
+    />
   );
 };
 
 CustomMultiSelect.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
-  placeholder: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
-  initialSelected: PropTypes.arrayOf(PropTypes.string),
+  preSelectedOptions: PropTypes.array,
 };
 
 export default CustomMultiSelect;

@@ -1,44 +1,56 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import AsyncSelect from "react-select/async";
 import PropTypes from "prop-types";
-import Select from "react-select";
 
-const CustomSingleSelect = ({ fetchUrl, placeholder, onChange, initialSelected }) => {
-  const [options, setOptions] = useState([]);
-  const [selected, setSelected] = useState(null);
+const CustomSingleSelect = ({ fetchUrl, placeholder, onChange, selectedValue }) => {
+  const [defaultOptions, setDefaultOptions] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   useEffect(() => {
     fetch(fetchUrl)
       .then((response) => response.json())
       .then((data) => {
         const formattedOptions = data.map((item) => ({
-          label: item.nome,
           value: item.nome,
+          label: item.nome,
         }));
-        setOptions(formattedOptions);
+        setDefaultOptions(formattedOptions);
+        if (selectedValue) {
+          const selected = formattedOptions.find(
+            (option) => option.value === selectedValue
+          );
+          setSelectedOption(selected);
+        }
       })
-      .catch((error) => console.error("Erro ao carregar dados:", error));
-  }, [fetchUrl]);
+      .catch((error) => console.error("Erro ao carregar perfis:", error));
+  }, [fetchUrl, selectedValue]);
 
-  useEffect(() => {
-    if (initialSelected) {
-      setSelected({ label: initialSelected, value: initialSelected });
-    }
-  }, [initialSelected]);
+  const loadOptions = (inputValue, callback) => {
+    fetch(fetchUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        const formattedOptions = data.map((item) => ({
+          value: item.nome,
+          label: item.nome,
+        }));
+        callback(formattedOptions.filter(option => option.label.toLowerCase().includes(inputValue.toLowerCase())));
+      })
+      .catch((error) => console.error("Erro ao carregar perfis:", error));
+  };
 
-  const handleChange = (selectedOption) => {
-    setSelected(selectedOption);
-    onChange(selectedOption ? selectedOption.value : null);
+  const handleChange = (selected) => {
+    setSelectedOption(selected);
+    onChange(selected ? selected.value : null);
   };
 
   return (
-    <div className="custom-single-select">
-      <Select
-        options={options}
-        value={selected}
-        onChange={handleChange}
-        placeholder={placeholder}
-      />
-    </div>
+    <AsyncSelect
+      value={selectedOption}
+      loadOptions={loadOptions}
+      defaultOptions={defaultOptions}
+      onChange={handleChange}
+      placeholder={placeholder}
+    />
   );
 };
 
@@ -46,7 +58,7 @@ CustomSingleSelect.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  initialSelected: PropTypes.string,
+  selectedValue: PropTypes.string,
 };
 
 export default CustomSingleSelect;
