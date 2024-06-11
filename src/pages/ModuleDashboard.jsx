@@ -131,9 +131,13 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       <SimpleEditModal
         isVisible={isEditModalVisible}
         onClose={handleEditModalClose}
-        title="Editar Módulo"
-        module={selectedRow}
+        title="Editar Transação"
+        item={selectedRow}
         onConfirm={handleEditConfirm}
+        fields={[
+          { label: "Código", name: "codigo", type: "text", required: true },
+          { label: "Nome", name: "nome", type: "text", required: true },
+        ]}
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
