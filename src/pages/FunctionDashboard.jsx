@@ -18,6 +18,9 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 8;
 
   useEffect(() => {
     fetch("http://localhost:8000/funcoes")
@@ -38,8 +41,15 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       );
     }
 
-    setFilteredFunctions(filtered);
-  }, [functions, searchTerm]);
+    setFilteredFunctions(
+      filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    );
+    setTotalPages(Math.ceil(filtered.length / rowsPerPage));
+  }, [functions, searchTerm, currentPage]);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleAddFunctionClick = () => {
     setIsAddModalVisible(true);
@@ -115,7 +125,11 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <ActionButtons buttons={functionButtons} />
       <Cover
         isVisible={

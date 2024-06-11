@@ -17,6 +17,9 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 8;
 
   useEffect(() => {
     fetch("http://localhost:8000/modulos")
@@ -37,8 +40,11 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       );
     }
 
-    setFilteredModules(filtered);
-  }, [modules, searchTerm]);
+    setFilteredModules(
+      filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    );
+    setTotalPages(Math.ceil(filtered.length / rowsPerPage));
+  }, [modules, searchTerm, currentPage]);
 
   const handleAddModuleClick = () => {
     setIsAddModalVisible(true);
@@ -50,6 +56,10 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
     } else {
       alert("Por favor, selecione um módulo para editar.");
     }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const handleDeleteModuleClick = () => {
@@ -114,7 +124,11 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <ActionButtons buttons={moduleButtons} />
       <Cover
         isVisible={

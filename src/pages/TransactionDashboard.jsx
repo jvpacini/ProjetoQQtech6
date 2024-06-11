@@ -17,6 +17,9 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 8;
 
   useEffect(() => {
     fetch("http://localhost:8000/transacoes")
@@ -37,8 +40,15 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       );
     }
 
-    setFilteredTransactions(filtered);
-  }, [transactions, searchTerm]);
+    setFilteredTransactions(
+      filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    );
+    setTotalPages(Math.ceil(filtered.length / rowsPerPage));
+  }, [transactions, searchTerm, currentPage]);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   const handleAddTransactionClick = () => {
     setIsAddModalVisible(true);
@@ -114,7 +124,11 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <ActionButtons buttons={transactionButtons} />
       <Cover
         isVisible={
