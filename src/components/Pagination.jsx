@@ -22,6 +22,11 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           <button className="page-link" onClick={() => onPageChange(currentPage + 1)}>&gt;</button>
         </li>
       </ul>
+      <style>{`
+        .page-item.active {
+          z-index: 1;
+        }
+      `}</style>
     </nav>
   );
 };
