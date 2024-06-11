@@ -21,6 +21,9 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 7;
 
   useEffect(() => {
     fetch("http://localhost:8000/users")
@@ -52,8 +55,11 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       filtered = filtered.filter((user) => user.perfil === selectedProfile);
     }
 
-    setFilteredUsers(filtered);
-  }, [users, searchTerm, selectedProfile]);
+    setFilteredUsers(
+      filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    );
+    setTotalPages(Math.ceil(filtered.length / rowsPerPage));
+  }, [users, searchTerm, selectedProfile, currentPage]);
 
   const handleAddUserClick = () => {
     setIsModalVisible(true);
@@ -85,6 +91,10 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
   const handleEditModalClose = () => {
     setIsEditModalVisible(false);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const handleConfirm = (selectedProfiles) => {
@@ -122,7 +132,9 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       .then((response) => {
         if (response.ok) {
           setUsers(
-            users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+            users.map((user) =>
+              user.id === updatedUser.id ? updatedUser : user
+            )
           );
           setSelectedRow(null);
         }
@@ -161,9 +173,16 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <ActionButtons buttons={userButtons} />
-      <Cover isVisible={isModalVisible || isDeleteModalVisible || isEditModalVisible} onClose={handleModalClose} />
+      <Cover
+        isVisible={isModalVisible || isDeleteModalVisible || isEditModalVisible}
+        onClose={handleModalClose}
+      />
       <Modal
         isVisible={isModalVisible}
         onClose={handleModalClose}

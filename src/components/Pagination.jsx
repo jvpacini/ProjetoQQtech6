@@ -1,35 +1,35 @@
-function Pagination() {
+import PropTypes from 'prop-types';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
+  }
+
   return (
-    <nav aria-label="Page navigation example">
-      <ul className="pagination">
-        <li className="page-item">
-          <a className="page-link" href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
+    <nav>
+      <ul className="pagination justify-content-center">
+        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+          <button className="page-link" onClick={() => onPageChange(currentPage - 1)}>&lt;</button>
         </li>
-        <li className="page-item">
-          <a className="page-link" href="#">
-            1
-          </a>
-        </li>
-        <li className="page-item">
-          <a className="page-link" href="#">
-            2
-          </a>
-        </li>
-        <li className="page-item">
-          <a className="page-link" href="#">
-            3
-          </a>
-        </li>
-        <li className="page-item">
-          <a className="page-link" href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
+        {pageNumbers.map(number => (
+          <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+            <button className="page-link" onClick={() => onPageChange(number)}>{number}</button>
+          </li>
+        ))}
+        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+          <button className="page-link" onClick={() => onPageChange(currentPage + 1)}>&gt;</button>
         </li>
       </ul>
     </nav>
   );
-}
+};
+
+Pagination.propTypes = {
+  currentPage: PropTypes.number.isRequired,
+  totalPages: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+};
 
 export default Pagination;
