@@ -19,3 +19,7 @@
 .dynamic-table thead {
   background-color: #f2f2f2;
 }
+
+.dynamic-table tbody tr.selected {
+  background-color: #dcdcdc; 
+}

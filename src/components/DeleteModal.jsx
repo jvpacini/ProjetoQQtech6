@@ -1,7 +1,5 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CustomSingleSelect from "./CustomSingleSelect";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -33,13 +31,21 @@ const ModalForm = styled.form`
   flex-direction: column;
 `;
 
-const ModalInput = styled.input`
-  width: 100%;
-  padding: 10px;
+const ModalField = styled.div`
   margin-bottom: 15px;
+`;
+
+const FieldLabel = styled.label`
+  font-weight: bold;
+  margin-bottom: 5px;
+`;
+
+const FieldValue = styled.span`
+  display: block;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-family: "Roboto", sans-serif;
+  background-color: #fff;
 `;
 
 const FormActions = styled.div`
@@ -59,11 +65,9 @@ const ActionButton = styled.button`
   }
 `;
 
-const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
-  const [selectedProfiles, setSelectedProfiles] = useState([]);
-
+const DeleteModal = ({ isVisible, onClose, title, fields, onConfirm }) => {
   const handleConfirm = () => {
-    onConfirm(selectedProfiles);
+    onConfirm();
     onClose();
   };
 
@@ -73,14 +77,12 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        <ModalInput type="text" placeholder="Nome completo" required />
-        <ModalInput type="email" placeholder="E-mail" required />
-        <ModalInput type="password" placeholder="Senha" required />
-        <CustomSingleSelect
-          fetchUrl={fetchUrl}
-          placeholder="Perfil"
-          onChange={setSelectedProfiles}
-        />
+        {fields.map((field, index) => (
+          <ModalField key={index}>
+            <FieldLabel>{field.label}</FieldLabel>
+            <FieldValue>{field.value}</FieldValue>
+          </ModalField>
+        ))}
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
             Voltar
@@ -94,12 +96,17 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   );
 };
 
-Modal.propTypes = {
+DeleteModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  fields: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      value: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   onConfirm: PropTypes.func.isRequired,
-  fetchUrl: PropTypes.string.isRequired,
 };
 
-export default Modal;
+export default DeleteModal;

@@ -1,0 +1,163 @@
+{
+  "users": [
+    {
+      "id": "136396",
+      "nome": "TESTE 1",
+      "email": "teste1@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "167866",
+      "nome": "TESTE 2",
+      "email": "teste2@example.com",
+      "perfil": "ESTABELECIMENTO",
+      "senha": "senha123"
+    },
+    {
+      "id": "999999",
+      "nome": "Usuário de Teste",
+      "email": "teste@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "TZ8G6N",
+      "nome": "TESTE 1 1",
+      "email": "xq6iu5@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "U6WSJG",
+      "nome": "TESTE 1 2",
+      "email": "zz7rq2@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "OQ4Z7D",
+      "nome": "TESTE 1 3",
+      "email": "cu12z3@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "CDIW3Z",
+      "nome": "TESTE 1 4",
+      "email": "jr93de@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "0EYD1X",
+      "nome": "TESTE 1 5",
+      "email": "m41y68@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "37DVE9",
+      "nome": "TESTE 2 1",
+      "email": "wbfuev@example.com",
+      "perfil": "ESTABELECIMENTO",
+      "senha": "senha123"
+    },
+    {
+      "id": "FYCN48",
+      "nome": "TESTE 2 2",
+      "email": "8jryvh@example.com",
+      "perfil": "ESTABELECIMENTO",
+      "senha": "senha123"
+    },
+    {
+      "id": "G4F6QK",
+      "nome": "TESTE 2 3",
+      "email": "hz1z5j@example.com",
+      "perfil": "ESTABELECIMENTO",
+      "senha": "senha123"
+    },
+    {
+      "id": "02RITM",
+      "nome": "TESTE 2 4",
+      "email": "esf5uk@example.com",
+      "perfil": "ESTABELECIMENTO",
+      "senha": "senha123"
+    },
+    {
+      "id": "GACR3E",
+      "nome": "TESTE 2 5",
+      "email": "lhvjye@example.com",
+      "perfil": "ESTABELECIMENTO",
+      "senha": "senha123"
+    },
+    {
+      "id": "2WEF5L",
+      "nome": "Usuário de Teste 1",
+      "email": "fszqtp@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "7UX9CQ",
+      "nome": "Usuário de Teste 2",
+      "email": "tnr4gu@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "5AQM7V",
+      "nome": "Usuário de Teste 3",
+      "email": "rg6qxf@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "IZGJ7O",
+      "nome": "Usuário de Teste 4",
+      "email": "w6x4jo@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    },
+    {
+      "id": "VJ5LHK",
+      "nome": "Usuário de Teste 5",
+      "email": "4h8lmz@example.com",
+      "perfil": "CAIXA VC",
+      "senha": "senha123"
+    }
+  ],
+  "perfis": [
+    {
+      "nome": "CAIXA VC",
+      "modulos": ["CA", "DG", "FV", "SC", "VC", "VG"],
+      "id": "17d8"
+    },
+    {
+      "nome": "ESTABELECIMENTO",
+      "modulos": ["SC", "VC"],
+      "id": "668a"
+    }
+  ],
+  "modulos": [
+    { "codigo": "CA", "nome": "Cadastro", "id": "d759" },
+    { "codigo": "DG", "nome": "Digitalização", "id": "aa02" },
+    { "codigo": "FV", "nome": "Fichas VerdeCard", "id": "d974" },
+    { "codigo": "SC", "nome": "VerdeCard", "id": "f610" },
+    { "codigo": "VC", "nome": "Lojista Afiliado", "id": "8082" },
+    { "codigo": "VG", "nome": "Controle", "id": "df4e" }
+  ],
+  "transacoes": [
+    { "codigo": "RKPC", "nome": "Risk Price", "id": "a85b" },
+    { "codigo": "PRFA", "nome": "Produto Fatura", "id": "4a09" },
+    { "codigo": "DEFO", "nome": "Desconto em Folha", "id": "a054" },
+    { "codigo": "PEFI", "nome": "Pessoa Física", "id": "1a85" },
+    { "codigo": "PEJU", "nome": "Pessoa Jurídica", "id": "2984" }
+  ],
+  "funcoes": [
+    { "codigo": "ADAT", "nome": "Adicionar", "id": "6167" },
+    { "codigo": "ALTR", "nome": "Alterar", "id": "057a" },
+    { "codigo": "RETR", "nome": "Visualizar", "id": "921a" },
+    { "codigo": "ADIC", "nome": "Adicionar Restrição", "id": "5713" }
+  ]
+}

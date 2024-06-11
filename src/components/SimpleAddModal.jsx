@@ -1,7 +1,6 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CustomSingleSelect from "./CustomSingleSelect";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -59,11 +58,13 @@ const ActionButton = styled.button`
   }
 `;
 
-const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
-  const [selectedProfiles, setSelectedProfiles] = useState([]);
+const SimpleAddModal = ({ isVisible, onClose, title, onConfirm }) => {
+  const [codigo, setCodigo] = useState("");
+  const [nome, setNome] = useState("");
 
   const handleConfirm = () => {
-    onConfirm(selectedProfiles);
+    const newModule = { codigo, nome };
+    onConfirm(newModule);
     onClose();
   };
 
@@ -73,13 +74,19 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        <ModalInput type="text" placeholder="Nome completo" required />
-        <ModalInput type="email" placeholder="E-mail" required />
-        <ModalInput type="password" placeholder="Senha" required />
-        <CustomSingleSelect
-          fetchUrl={fetchUrl}
-          placeholder="Perfil"
-          onChange={setSelectedProfiles}
+        <ModalInput
+          type="text"
+          value={codigo}
+          placeholder="Código do Módulo"
+          onChange={(e) => setCodigo(e.target.value)}
+          required
+        />
+        <ModalInput
+          type="text"
+          value={nome}
+          placeholder="Nome do Módulo"
+          onChange={(e) => setNome(e.target.value)}
+          required
         />
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
@@ -94,12 +101,11 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   );
 };
 
-Modal.propTypes = {
+SimpleAddModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
-  fetchUrl: PropTypes.string.isRequired,
 };
 
-export default Modal;
+export default SimpleAddModal;

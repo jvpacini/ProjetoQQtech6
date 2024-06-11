@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CustomSingleSelect from "./CustomSingleSelect";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -59,11 +58,26 @@ const ActionButton = styled.button`
   }
 `;
 
-const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
-  const [selectedProfiles, setSelectedProfiles] = useState([]);
+const SimpleEditModal = ({ isVisible, onClose, title, item, onConfirm, fields }) => {
+  const [formData, setFormData] = useState({});
+
+  useEffect(() => {
+    if (item) {
+      const initialFormData = fields.reduce((acc, field) => {
+        acc[field.name] = item[field.name] || "";
+        return acc;
+      }, {});
+      setFormData(initialFormData);
+    }
+  }, [item, fields]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleConfirm = () => {
-    onConfirm(selectedProfiles);
+    const updatedItem = { ...item, ...formData };
+    onConfirm(updatedItem);
     onClose();
   };
 
@@ -73,14 +87,17 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        <ModalInput type="text" placeholder="Nome completo" required />
-        <ModalInput type="email" placeholder="E-mail" required />
-        <ModalInput type="password" placeholder="Senha" required />
-        <CustomSingleSelect
-          fetchUrl={fetchUrl}
-          placeholder="Perfil"
-          onChange={setSelectedProfiles}
-        />
+        {fields.map((field) => (
+          <ModalInput
+            key={field.name}
+            type={field.type}
+            name={field.name}
+            value={formData[field.name] || ""}
+            placeholder={field.label}
+            onChange={handleChange}
+            required={field.required}
+          />
+        ))}
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
             Voltar
@@ -94,12 +111,20 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   );
 };
 
-Modal.propTypes = {
+SimpleEditModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
+  item: PropTypes.object,
   onConfirm: PropTypes.func.isRequired,
-  fetchUrl: PropTypes.string.isRequired,
+  fields: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      required: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
 };
 
-export default Modal;
+export default SimpleEditModal;
