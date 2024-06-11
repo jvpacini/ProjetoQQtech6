@@ -59,31 +59,22 @@ const ActionButton = styled.button`
   }
 `;
 
-const EditProfileModal = ({
-  isVisible,
-  onClose,
-  title,
-  profile,
-  onConfirm,
-  fetchUrl,
-}) => {
-  const [name, setName] = useState("");
-  const [modules, setModules] = useState([]);
+const EditProfileModal = ({ isVisible, onClose, title, profileData, onConfirm }) => {
+  const [nome, setNome] = useState("");
+  const [selectedModules, setSelectedModules] = useState([]);
 
   useEffect(() => {
-    if (profile) {
-      setName(profile.nome);
-      setModules(
-        profile.modulos.map((modulo) => ({ value: modulo, label: modulo }))
-      );
+    if (profileData) {
+      setNome(profileData.nome);
+      setSelectedModules(profileData.modulos.map((mod) => ({ label: mod, value: mod })));
     }
-  }, [profile]);
+  }, [profileData]);
 
   const handleConfirm = () => {
     const updatedProfile = {
-      ...profile,
-      nome: name,
-      modulos: modules.map((modulo) => modulo.value),
+      ...profileData,
+      nome,
+      modulos: selectedModules.map((mod) => mod.value),
     };
     onConfirm(updatedProfile);
     onClose();
@@ -97,16 +88,16 @@ const EditProfileModal = ({
       <ModalForm>
         <ModalInput
           type="text"
-          value={name}
+          value={nome}
           placeholder="Nome do Perfil"
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => setNome(e.target.value)}
           required
         />
         <CustomMultiSelect
-          fetchUrl={fetchUrl}
+          fetchUrl="http://localhost:8000/modulos"
           placeholder="Módulos"
-          onChange={setModules}
-          preSelectedOptions={modules}
+          onChange={setSelectedModules}
+          defaultValue={selectedModules}
         />
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
@@ -125,9 +116,8 @@ EditProfileModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  profile: PropTypes.object,
+  profileData: PropTypes.object,
   onConfirm: PropTypes.func.isRequired,
-  fetchUrl: PropTypes.string.isRequired,
 };
 
 export default EditProfileModal;
