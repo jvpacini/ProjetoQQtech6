@@ -31,6 +31,7 @@ const ModalTitle = styled.h2`
 const ModalForm = styled.form`
   display: flex;
   flex-direction: column;
+  gap: 15px;
 `;
 
 const ModalInput = styled.input`
@@ -49,6 +50,7 @@ const FormActions = styled.div`
 
 const ActionButton = styled.button`
   padding: 10px 20px;
+  margin-top: 10rem;
   border: none;
   border-radius: 5px;
   background-color: #d9d9d9;

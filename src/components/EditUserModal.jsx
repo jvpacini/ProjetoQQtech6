@@ -46,7 +46,6 @@ const ModalInput = styled.input`
 const ModalActions = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
 `;
 
 const ModalButton = styled.button`

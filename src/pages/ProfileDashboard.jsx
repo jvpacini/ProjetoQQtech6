@@ -98,7 +98,7 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleAddConfirm = (newProfile) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     fetch("http://localhost:8000/perfis", {
       method: "POST",
       headers: {
@@ -115,7 +115,7 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleDeleteConfirm = () => {
-    // Lógica de exclusão aqui
+    // TODO: Lógica de exclusão aqui
     if (selectedRow) {
       fetch(`http://localhost:8000/perfis/${selectedRow.id}`, {
         method: "DELETE",
@@ -132,7 +132,7 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleEditConfirm = (updatedProfile) => {
-    // Adicione a lógica de atualização aqui
+    // TODO: Adicione a lógica de atualização aqui
     fetch(`http://localhost:8000/perfis/${updatedProfile.id}`, {
       method: "PUT",
       headers: {

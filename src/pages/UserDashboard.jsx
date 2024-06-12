@@ -87,10 +87,12 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
   const handleDeleteModalClose = () => {
     setIsDeleteModalVisible(false);
+    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
   };
 
   const handleEditModalClose = () => {
     setIsEditModalVisible(false);
+    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
   };
 
   const handlePageChange = (pageNumber) => {
@@ -98,13 +100,13 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleConfirm = (selectedProfiles) => {
-    // Lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Perfis selecionados:", selectedProfiles);
     setIsModalVisible(false);
   };
 
   const handleDeleteConfirm = () => {
-    // Lógica de exclusão aqui
+    // TODO: Lógica de exclusão aqui
     if (selectedRow) {
       fetch(`http://localhost:8000/users/${selectedRow.id}`, {
         method: "DELETE",
@@ -121,7 +123,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleEditConfirm = (updatedUser) => {
-    // Adicione a lógica de atualização aqui
+    // TODO: Adicione a lógica de atualização aqui
     fetch(`http://localhost:8000/users/${updatedUser.id}`, {
       method: "PUT",
       headers: {
@@ -220,7 +222,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         onClose={handleEditModalClose}
         title="Editar usuário"
         onConfirm={handleEditConfirm}
-        userData={selectedRow}
+        userData={selectedRow ?? {}}
       />
     </div>
   );

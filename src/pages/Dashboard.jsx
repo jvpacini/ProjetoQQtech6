@@ -34,17 +34,17 @@ const Dashboard = () => {
         <DashboardBox
           icon={userIcon}
           title="Usuários"
-          subtitle={`Total de usuários: ${userCount}`}
+          subtitle={`Total de usuários: ${userCount != 0 ? userCount : "Carregando..."}`}
         />
         <DashboardBox
           icon={transactionIcon}
           title="Transações"
-          subtitle={`Total de transações: ${transactionCount}`}
+          subtitle={`Total de transações: ${transactionCount != 0 ? transactionCount : "Carregando..."}`}
         />
         <DashboardBox
           icon={functionIcon}
           title="Módulos"
-          subtitle={`Total de módulos: ${moduleCount}`}
+          subtitle={`Total de módulos: ${moduleCount != 0 ? moduleCount : "Carregando..."}`}
         />
         {/* Aqui terá espaço para o gráfico */}
     </div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import logo from "../assets/logo.png"; // Atualize o caminho conforme necessário
+import logo from "../assets/logo.png";
 
 const LoginPage = styled.div`
   font-family: "Roboto", sans-serif;

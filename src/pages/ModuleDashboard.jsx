@@ -85,19 +85,19 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleAddConfirm = (newModule) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Novo módulo:", newModule);
     setIsAddModalVisible(false);
   };
 
   const handleEditConfirm = (updatedModule) => {
-    // Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
+    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
     console.log("Módulo atualizado:", updatedModule);
     setIsEditModalVisible(false);
   };
 
   const handleDeleteConfirm = () => {
-    // Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
+    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
     console.log("Módulo a ser deletado:", selectedRow);
     setIsDeleteModalVisible(false);
   };
