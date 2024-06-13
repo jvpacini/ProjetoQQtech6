@@ -3,9 +3,9 @@ import PropTypes from "prop-types";
 import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
-import Modal from "../components/AddUserModal";
-import DeleteModal from "../components/DeleteModal";
-import EditModal from "../components/EditUserModal";
+import AddUserModal from "../components/AddUserModal";
+import DeleteUserModal from "../components/DeleteUserModal";
+import EditUserModal from "../components/EditUserModal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
@@ -185,7 +185,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         isVisible={isModalVisible || isDeleteModalVisible || isEditModalVisible}
         onClose={handleModalClose}
       />
-      <Modal
+      <AddUserModal
         isVisible={isModalVisible}
         onClose={handleModalClose}
         title="Cadastro de usuário"
@@ -202,8 +202,8 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
           />
           <input type="password" placeholder="Senha" required />
         </form>
-      </Modal>
-      <DeleteModal
+      </AddUserModal>
+      <DeleteUserModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
         title="Confirmação de Exclusão"
@@ -217,7 +217,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
             : []
         }
       />
-      <EditModal
+      <EditUserModal
         isVisible={isEditModalVisible}
         onClose={handleEditModalClose}
         title="Editar usuário"

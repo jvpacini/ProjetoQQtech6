@@ -59,7 +59,7 @@ const ActionButton = styled.button`
   }
 `;
 
-const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
+const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   const [selectedProfiles, setSelectedProfiles] = useState([]);
 
   const handleConfirm = () => {
@@ -94,7 +94,7 @@ const Modal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   );
 };
 
-Modal.propTypes = {
+AddUserModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
@@ -102,4 +102,4 @@ Modal.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
 };
 
-export default Modal;
+export default AddUserModal;

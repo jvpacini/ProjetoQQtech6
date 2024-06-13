@@ -5,7 +5,7 @@ import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
 import AddModuleModal from "../components/SimpleAddModal";
 import SimpleEditModal from "../components/SimpleEditModal";
-import DeleteModal from "../components/DeleteModal";
+import DeleteModal from "../components/DeleteUserModal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
