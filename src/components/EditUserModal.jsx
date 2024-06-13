@@ -46,7 +46,6 @@ const ModalInput = styled.input`
 const ModalActions = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
 `;
 
 const ModalButton = styled.button`
@@ -62,7 +61,7 @@ const ModalButton = styled.button`
   }
 `;
 
-const EditModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
+const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
   const [formData, setFormData] = useState(userData);
 
   useEffect(() => {
@@ -129,7 +128,7 @@ const EditModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
   );
 };
 
-EditModal.propTypes = {
+EditUserModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
@@ -142,4 +141,4 @@ EditModal.propTypes = {
   }).isRequired,
 };
 
-export default EditModal;
+export default EditUserModal;

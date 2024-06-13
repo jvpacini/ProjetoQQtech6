@@ -85,19 +85,19 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleAddConfirm = (newTransaction) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Nova transação:", newTransaction);
     setIsAddModalVisible(false);
   };
 
   const handleEditConfirm = (updatedTransaction) => {
-    // Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
+    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
     console.log("Transação atualizada:", updatedTransaction);
     setIsEditModalVisible(false);
   };
 
   const handleDeleteConfirm = () => {
-    // Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
+    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
     console.log("Transação a ser deletada:", selectedRow);
     setIsDeleteModalVisible(false);
   };

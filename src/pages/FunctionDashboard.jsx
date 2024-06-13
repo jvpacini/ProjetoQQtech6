@@ -86,19 +86,19 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleAddConfirm = (newFunction) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Nova função:", newFunction);
     setIsAddModalVisible(false);
   };
 
   const handleEditConfirm = (updatedFunction) => {
-    // Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
+    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
     console.log("Função atualizada:", updatedFunction);
     setIsEditModalVisible(false);
   };
 
   const handleDeleteConfirm = () => {
-    // Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
+    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
     console.log("Função a ser deletada:", selectedRow);
     setIsDeleteModalVisible(false);
   };

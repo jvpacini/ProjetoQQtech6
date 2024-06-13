@@ -101,7 +101,7 @@ function ForgotPassword() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica para enviar o link de recuperação de senha
+    // TODO: Lógica para enviar o link de recuperação de senha
     setMessage("Link de recuperação enviado com sucesso!");
   };
 
