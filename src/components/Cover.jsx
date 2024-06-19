@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import "./Cover.css";
 
-function Cover({ isVisible, onClose }) {
+function Cover({ isVisible }) {
   if (!isVisible) return null;
 
-  return <div className="cover" onClick={onClose}></div>;
+  return <div className="cover" ></div>;
 }
 
 Cover.propTypes = {

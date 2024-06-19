@@ -73,6 +73,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
 
   const handleAddModalClose = () => {
     setIsAddModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleEditModalClose = () => {
