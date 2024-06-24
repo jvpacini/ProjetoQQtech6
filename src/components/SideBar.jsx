@@ -3,12 +3,12 @@ import "./SideBar.css";
 
 function SideBar() {
   const items = [
-    { name: "Dashboard", url: "/" },
-    { name: "Usuários", url: "/users" },
+    { name: "Usuários", url: "/" },
     { name: "Módulos", url: "/modules" },
     { name: "Transações", url: "/transactions" },
     { name: "Funções", url: "/functions" },
     { name: "Perfis", url: "/profiles" },
+    { name: "Dashboard", url: "/dashboard" },
   ];
 
   return (

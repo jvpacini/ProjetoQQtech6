@@ -21,6 +21,7 @@
     "react-multi-select-component": "^4.3.4",
     "react-router-dom": "^6.23.1",
     "react-select": "^5.8.0",
+    "react-tooltip": "^5.27.0",
     "styled-components": "^6.1.11"
   },
   "devDependencies": {

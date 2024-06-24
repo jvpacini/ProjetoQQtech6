@@ -24,7 +24,7 @@ const ProfileChart = () => {
           labels: labels,
           datasets: [
             {
-              label: 'Distribuição de Perfis',
+              label: 'Quantidade de usuários',
               data: data,
               backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
