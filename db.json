@@ -125,6 +125,41 @@
       "email": "4h8lmz@example.com",
       "perfil": "CAIXA VC",
       "senha": "senha123"
+    },
+    {
+      "id": "A1B2C3",
+      "nome": "Usuário Novo 1",
+      "email": "novo1@example.com",
+      "perfil": "GERENTE",
+      "senha": "senha123"
+    },
+    {
+      "id": "D4E5F6",
+      "nome": "Usuário Novo 2",
+      "email": "novo2@example.com",
+      "perfil": "SUPERVISOR",
+      "senha": "senha123"
+    },
+    {
+      "id": "G7H8I9",
+      "nome": "Usuário Novo 3",
+      "email": "novo3@example.com",
+      "perfil": "ANALISTA",
+      "senha": "senha123"
+    },
+    {
+      "id": "J1K2L3",
+      "nome": "Usuário Novo 4",
+      "email": "novo4@example.com",
+      "perfil": "GERENTE",
+      "senha": "senha123"
+    },
+    {
+      "id": "M4N5O6",
+      "nome": "Usuário Novo 5",
+      "email": "novo5@example.com",
+      "perfil": "SUPERVISOR",
+      "senha": "senha123"
     }
   ],
   "perfis": [
@@ -137,6 +172,21 @@
       "nome": "ESTABELECIMENTO",
       "modulos": ["SC", "VC"],
       "id": "668a"
+    },
+    {
+      "nome": "GERENTE",
+      "modulos": ["CA", "DG", "VG"],
+      "id": "1234"
+    },
+    {
+      "nome": "SUPERVISOR",
+      "modulos": ["CA", "VG", "FV"],
+      "id": "5678"
+    },
+    {
+      "nome": "ANALISTA",
+      "modulos": ["DG", "SC"],
+      "id": "9101"
     }
   ],
   "modulos": [
