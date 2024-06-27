@@ -12,11 +12,16 @@ import SearchBar from "../components/SearchBar";
 
 const TransactionDashboard = ({ searchTerm, onSearch }) => {
   const [transactions, setTransactions] = useState([]);
+  const [modules, setModules] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
+  const [paginatedTransactions, setPaginatedTransactions] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 8;
 
   useEffect(() => {
     fetch("http://localhost:8000/transacoes")
@@ -26,6 +31,14 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         setFilteredTransactions(data); // Inicialmente, todas as transações são exibidas
       })
       .catch((error) => console.error("Erro ao carregar transações:", error));
+
+    // Fetch modules data
+    fetch("http://localhost:8000/modulos")
+      .then((response) => response.json())
+      .then((data) => {
+        setModules(data);
+      })
+      .catch((error) => console.error("Erro ao carregar módulos:", error));
   }, []);
 
   useEffect(() => {
@@ -38,7 +51,15 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
     }
 
     setFilteredTransactions(filtered);
+    setTotalPages(Math.ceil(filtered.length / rowsPerPage));
+    setCurrentPage(1); // Reset to first page on search/filter change
   }, [transactions, searchTerm]);
+
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const paginated = filteredTransactions.slice(startIndex, startIndex + rowsPerPage);
+    setPaginatedTransactions(paginated);
+  }, [filteredTransactions, currentPage]);
 
   const handleAddTransactionClick = () => {
     setIsAddModalVisible(true);
@@ -62,6 +83,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
 
   const handleAddModalClose = () => {
     setIsAddModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleEditModalClose = () => {
@@ -75,21 +97,25 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleAddConfirm = (newTransaction) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Nova transação:", newTransaction);
     setIsAddModalVisible(false);
   };
 
   const handleEditConfirm = (updatedTransaction) => {
-    // Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
+    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
     console.log("Transação atualizada:", updatedTransaction);
     setIsEditModalVisible(false);
   };
 
   const handleDeleteConfirm = () => {
-    // Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
+    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
     console.log("Transação a ser deletada:", selectedRow);
     setIsDeleteModalVisible(false);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const transactionButtons = [
@@ -101,7 +127,13 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
   const transactionColumns = [
     { header: "Código", field: "codigo" },
     { header: "Nome", field: "nome" },
+    { header: "Módulos", field: "modulos" }
   ];
+
+  const dataWithModules = paginatedTransactions.map(transaction => ({
+    ...transaction,
+    modulos: transaction.modulos.map(mod => modules.find(m => m.codigo === mod)?.codigo || mod).join(', ')
+  }));
 
   return (
     <div className="content">
@@ -110,11 +142,15 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={transactionColumns}
-        data={filteredTransactions}
+        data={dataWithModules}
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <ActionButtons buttons={transactionButtons} />
       <Cover
         isVisible={

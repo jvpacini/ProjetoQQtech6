@@ -1,55 +1,49 @@
 import { useState, useEffect } from "react";
+import Select from "react-select";
 import PropTypes from "prop-types";
-import AsyncSelect from "react-select/async";
 
-const CustomMultiSelect = ({ fetchUrl, preSelectedOptions, placeholder }) => {
+const CustomMultiSelect = ({ fetchUrl, placeholder, onChange, defaultValue }) => {
   const [options, setOptions] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState(
-    preSelectedOptions || []
-  );
+  const [selectedOptions, setSelectedOptions] = useState(defaultValue || []);
 
   useEffect(() => {
     fetch(fetchUrl)
       .then((response) => response.json())
       .then((data) => {
         const formattedOptions = data.map((item) => ({
-          value: item.id,
-          label: item.nome,
+          value: item.codigo || item.value,
+          label: item.nome || item.label,
         }));
         setOptions(formattedOptions);
       })
-      .catch((error) => console.error("Erro ao carregar opções:", error));
+      .catch((error) => console.error("Error loading options:", error));
   }, [fetchUrl]);
+
+  useEffect(() => {
+    setSelectedOptions(defaultValue);
+  }, [defaultValue]);
 
   const handleChange = (selected) => {
     setSelectedOptions(selected);
+    onChange(selected);
   };
 
   return (
-    <AsyncSelect
+    <Select
       isMulti
-      cacheOptions
-      defaultOptions={options}
       value={selectedOptions}
-      placeholder={placeholder}
-      loadOptions={(inputValue, callback) => {
-        setTimeout(() => {
-          callback(
-            options.filter((option) =>
-              option.label.toLowerCase().includes(inputValue.toLowerCase())
-            )
-          );
-        }, 1000);
-      }}
       onChange={handleChange}
+      options={options}
+      placeholder={placeholder}
     />
   );
 };
 
 CustomMultiSelect.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
-  preSelectedOptions: PropTypes.array,
   placeholder: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  defaultValue: PropTypes.array,
 };
 
 export default CustomMultiSelect;

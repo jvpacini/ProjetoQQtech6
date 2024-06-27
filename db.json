@@ -125,39 +125,148 @@
       "email": "4h8lmz@example.com",
       "perfil": "CAIXA VC",
       "senha": "senha123"
+    },
+    {
+      "id": "A1B2C3",
+      "nome": "Usuário Novo 1",
+      "email": "novo1@example.com",
+      "perfil": "GERENTE",
+      "senha": "senha123"
+    },
+    {
+      "id": "D4E5F6",
+      "nome": "Usuário Novo 2",
+      "email": "novo2@example.com",
+      "perfil": "SUPERVISOR",
+      "senha": "senha123"
+    },
+    {
+      "id": "G7H8I9",
+      "nome": "Usuário Novo 3",
+      "email": "novo3@example.com",
+      "perfil": "ANALISTA",
+      "senha": "senha123"
+    },
+    {
+      "id": "J1K2L3",
+      "nome": "Usuário Novo 4",
+      "email": "novo4@example.com",
+      "perfil": "GERENTE",
+      "senha": "senha123"
+    },
+    {
+      "id": "M4N5O6",
+      "nome": "Usuário Novo 5",
+      "email": "novo5@example.com",
+      "perfil": "SUPERVISOR",
+      "senha": "senha123"
     }
   ],
   "perfis": [
     {
       "nome": "CAIXA VC",
       "modulos": ["CA", "DG", "FV", "SC", "VC", "VG"],
-      "id": "17d8"
+      "id": "17d8",
+      "descricao": "Perfil de Caixa VC"
     },
     {
       "nome": "ESTABELECIMENTO",
       "modulos": ["SC", "VC"],
-      "id": "668a"
+      "id": "668a",
+      "descricao": "Perfil de Estabelecimento"
+    },
+    {
+      "nome": "GERENTE",
+      "modulos": ["CA", "DG", "VG"],
+      "id": "1234",
+      "descricao": "Perfil de Gerente"
+    },
+    {
+      "nome": "SUPERVISOR",
+      "modulos": ["CA", "VG", "FV"],
+      "id": "5678",
+      "descricao": "Perfil de Supervisor"
+    },
+    {
+      "nome": "ANALISTA",
+      "modulos": ["DG", "SC"],
+      "id": "9101",
+      "descricao": "Perfil de Analista"
     }
   ],
   "modulos": [
-    { "codigo": "CA", "nome": "Cadastro", "id": "d759" },
-    { "codigo": "DG", "nome": "Digitalização", "id": "aa02" },
-    { "codigo": "FV", "nome": "Fichas VerdeCard", "id": "d974" },
-    { "codigo": "SC", "nome": "VerdeCard", "id": "f610" },
-    { "codigo": "VC", "nome": "Lojista Afiliado", "id": "8082" },
-    { "codigo": "VG", "nome": "Controle", "id": "df4e" }
+    { "codigo": "CA", "nome": "Cadastro", "id": "d759", "descricao": "Módulo de Cadastro" },
+    { "codigo": "DG", "nome": "Digitalização", "id": "aa02", "descricao": "Módulo de Digitalização" },
+    { "codigo": "FV", "nome": "Fichas VerdeCard", "id": "d974", "descricao": "Módulo de Fichas VerdeCard" },
+    { "codigo": "SC", "nome": "VerdeCard", "id": "f610", "descricao": "Módulo de VerdeCard" },
+    { "codigo": "VC", "nome": "Lojista Afiliado", "id": "8082", "descricao": "Módulo de Lojista Afiliado" },
+    { "codigo": "VG", "nome": "Controle", "id": "df4e", "descricao": "Módulo de Controle" }
   ],
   "transacoes": [
-    { "codigo": "RKPC", "nome": "Risk Price", "id": "a85b" },
-    { "codigo": "PRFA", "nome": "Produto Fatura", "id": "4a09" },
-    { "codigo": "DEFO", "nome": "Desconto em Folha", "id": "a054" },
-    { "codigo": "PEFI", "nome": "Pessoa Física", "id": "1a85" },
-    { "codigo": "PEJU", "nome": "Pessoa Jurídica", "id": "2984" }
+    {
+      "codigo": "RKPC",
+      "nome": "Risk Price",
+      "id": "a85b",
+      "modulos": ["CA", "DG", "FV", "SC", "VC", "VG"],
+      "descricao": "Transação de Risk Price"
+    },
+    {
+      "codigo": "PRFA",
+      "nome": "Produto Fatura",
+      "id": "4a09",
+      "modulos": ["CA", "DG", "FV"],
+      "descricao": "Transação de Produto Fatura"
+    },
+    {
+      "codigo": "DEFO",
+      "nome": "Desconto em Folha",
+      "id": "a054",
+      "modulos": ["SC", "VC"],
+      "descricao": "Transação de Desconto em Folha"
+    },
+    {
+      "codigo": "PEFI",
+      "nome": "Pessoa Física",
+      "id": "1a85",
+      "modulos": ["CA", "DG", "FV", "SC"],
+      "descricao": "Transação de Pessoa Física"
+    },
+    {
+      "codigo": "PEJU",
+      "nome": "Pessoa Jurídica",
+      "id": "2984",
+      "modulos": ["VC", "VG"],
+      "descricao": "Transação de Pessoa Jurídica"
+    }
   ],
   "funcoes": [
-    { "codigo": "ADAT", "nome": "Adicionar", "id": "6167" },
-    { "codigo": "ALTR", "nome": "Alterar", "id": "057a" },
-    { "codigo": "RETR", "nome": "Visualizar", "id": "921a" },
-    { "codigo": "ADIC", "nome": "Adicionar Restrição", "id": "5713" }
+    {
+      "codigo": "ADAT",
+      "nome": "Adicionar",
+      "id": "6167",
+      "modulos": ["CA", "DG", "FV", "SC", "VC", "VG"],
+      "descricao": "Função de Adicionar"
+    },
+    {
+      "codigo": "ALTR",
+      "nome": "Alterar",
+      "id": "057a",
+      "modulos": ["CA", "DG"],
+      "descricao": "Função de Alterar"
+    },
+    {
+      "codigo": "RETR",
+      "nome": "Visualizar",
+      "id": "921a",
+      "modulos": ["CA", "VG", "FV"],
+      "descricao": "Função de Visualizar"
+    },
+    {
+      "codigo": "ADIC",
+      "nome": "Adicionar Restrição",
+      "id": "5713",
+      "modulos": ["DG", "SC"],
+      "descricao": "Função de Adicionar Restrição"
+    }
   ]
 }

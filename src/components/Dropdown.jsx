@@ -25,8 +25,4 @@ Dropdown.propTypes = {
   placeholder: PropTypes.string,
 };
 
-Dropdown.defaultProps = {
-  placeholder: "Selecione uma opção",
-};
-
 export default Dropdown;

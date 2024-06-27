@@ -13,11 +13,16 @@ import "./Dashboard.css";
 
 const FunctionDashboard = ({ searchTerm, onSearch }) => {
   const [functions, setFunctions] = useState([]);
+  const [modules, setModules] = useState([]);
   const [filteredFunctions, setFilteredFunctions] = useState([]);
+  const [paginatedFunctions, setPaginatedFunctions] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 8;
 
   useEffect(() => {
     fetch("http://localhost:8000/funcoes")
@@ -27,6 +32,14 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
         setFilteredFunctions(data); // Inicialmente, todas as funções são exibidas
       })
       .catch((error) => console.error("Erro ao carregar funções:", error));
+
+    // Fetch modules data
+    fetch("http://localhost:8000/modulos")
+      .then((response) => response.json())
+      .then((data) => {
+        setModules(data);
+      })
+      .catch((error) => console.error("Erro ao carregar módulos:", error));
   }, []);
 
   useEffect(() => {
@@ -39,7 +52,15 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
     }
 
     setFilteredFunctions(filtered);
+    setTotalPages(Math.ceil(filtered.length / rowsPerPage));
+    setCurrentPage(1); // Reset to first page on search/filter change
   }, [functions, searchTerm]);
+
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const paginated = filteredFunctions.slice(startIndex, startIndex + rowsPerPage);
+    setPaginatedFunctions(paginated);
+  }, [filteredFunctions, currentPage]);
 
   const handleAddFunctionClick = () => {
     setIsAddModalVisible(true);
@@ -63,6 +84,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
 
   const handleAddModalClose = () => {
     setIsAddModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleEditModalClose = () => {
@@ -76,21 +98,25 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleAddConfirm = (newFunction) => {
-    // Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
+    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
     console.log("Nova função:", newFunction);
     setIsAddModalVisible(false);
   };
 
   const handleEditConfirm = (updatedFunction) => {
-    // Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
+    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
     console.log("Função atualizada:", updatedFunction);
     setIsEditModalVisible(false);
   };
 
   const handleDeleteConfirm = () => {
-    // Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
+    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
     console.log("Função a ser deletada:", selectedRow);
     setIsDeleteModalVisible(false);
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const functionButtons = [
@@ -102,7 +128,13 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
   const functionColumns = [
     { header: "Código", field: "codigo" },
     { header: "Nome", field: "nome" },
+    { header: "Modulos", field: "modulos" }
   ];
+
+  const dataWithModules = paginatedFunctions.map(func => ({
+    ...func,
+    modulos: func.modulos.map(mod => modules.find(m => m.codigo === mod)?.codigo || mod).join(', ')
+  }));
 
   return (
     <div className="content">
@@ -111,11 +143,15 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={functionColumns}
-        data={filteredFunctions}
+        data={dataWithModules}
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
-      <Pagination />
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+      />
       <ActionButtons buttons={functionButtons} />
       <Cover
         isVisible={

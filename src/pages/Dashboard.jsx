@@ -4,6 +4,7 @@ import DashboardBox from "../components/DashboardBox";
 import userIcon from "../assets/user_icon_template.png"; 
 import transactionIcon from "../assets/transaction_icon.png"; 
 import functionIcon from "../assets/gear_icon.png"; 
+import ProfileDistributionChart from "../components/ProfileChart";
 
 const Dashboard = () => {
   const [userCount, setUserCount] = useState(0);
@@ -30,23 +31,29 @@ const Dashboard = () => {
   return (
     <div className="content">
       <SideBar />
-        <h1>Dashboard</h1>
-        <DashboardBox
-          icon={userIcon}
-          title="Usuários"
-          subtitle={`Total de usuários: ${userCount}`}
-        />
-        <DashboardBox
-          icon={transactionIcon}
-          title="Transações"
-          subtitle={`Total de transações: ${transactionCount}`}
-        />
-        <DashboardBox
-          icon={functionIcon}
-          title="Módulos"
-          subtitle={`Total de módulos: ${moduleCount}`}
-        />
-        {/* Aqui terá espaço para o gráfico */}
+      <div className="dashboard-container">
+        <div className="dashboard-info">
+          <h1>Dashboard</h1>
+          <DashboardBox
+            icon={userIcon}
+            title="Usuários"
+            subtitle={`Total de usuários: ${userCount != 0 ? userCount : "Carregando..."}`}
+          />
+          <DashboardBox
+            icon={transactionIcon}
+            title="Transações"
+            subtitle={`Total de transações: ${transactionCount != 0 ? transactionCount : "Carregando..."}`}
+          />
+          <DashboardBox
+            icon={functionIcon}
+            title="Módulos"
+            subtitle={`Total de módulos: ${moduleCount != 0 ? moduleCount : "Carregando..."}`}
+          />
+        </div>
+        <div className="dashboard-chart">
+          <ProfileDistributionChart />
+        </div>
+      </div>
     </div>
   );
 };

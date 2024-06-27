@@ -1,8 +1,8 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import logo from "../assets/logo.png"; // Atualize o caminho conforme necessário
+import logo from "../assets/logo.png";
+import useLoginHandler from "../components/LoginHandler";
 
 const LoginPage = styled.div`
   font-family: "Roboto", sans-serif;
@@ -95,17 +95,11 @@ const Button = styled.button`
 function Login({ setIsAuthenticated }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const { handleLogin } = useLoginHandler(setIsAuthenticated);
 
-  const handleLogin = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    if (email === "user@example.com" && password === "password") {
-      setIsAuthenticated(true);
-      localStorage.setItem("isAuthenticated", "true");
-      navigate("/");
-    } else {
-      alert("Usuário ou senha incorretos");
-    }
+    handleLogin(email, password);
   };
 
   return (
@@ -114,21 +108,23 @@ function Login({ setIsAuthenticated }) {
         <Logo src={logo} alt="Projeto BE-A-BA" />
         <LoginBox>
           <Title>Login</Title>
-          <Form onSubmit={handleLogin}>
+          <Form onSubmit={onSubmit}>
             <Label>Email</Label>
             <Input
               type="email"
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required />
+              required
+            />
             <Label>Senha</Label>
             <Input
               type="password"
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required />
+              required
+            />
             <ForgotPassword href="/forgot-password">
               Esqueceu a senha?
             </ForgotPassword>
