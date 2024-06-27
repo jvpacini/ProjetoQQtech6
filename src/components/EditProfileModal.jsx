@@ -43,6 +43,7 @@ const ModalInput = styled.input`
 `;
 
 const FormActions = styled.div`
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
 `;
@@ -59,14 +60,22 @@ const ActionButton = styled.button`
   }
 `;
 
-const EditProfileModal = ({ isVisible, onClose, title, profileData, onConfirm }) => {
+const EditProfileModal = ({
+  isVisible,
+  onClose,
+  title,
+  profileData,
+  onConfirm,
+}) => {
   const [nome, setNome] = useState("");
   const [selectedModules, setSelectedModules] = useState([]);
 
   useEffect(() => {
     if (profileData) {
       setNome(profileData.nome);
-      setSelectedModules(profileData.modulos.map((mod) => ({ label: mod, value: mod })));
+      setSelectedModules(
+        profileData.modulos.map((mod) => ({ label: mod, value: mod }))
+      );
     }
   }, [profileData]);
 

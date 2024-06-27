@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
+import Cookies from "js-cookie";
 import UserDashboard from "./pages/UserDashboard";
 import ModuleDashboard from "./pages/ModuleDashboard";
 import TransactionDashboard from "./pages/TransactionDashboard";
@@ -12,12 +13,14 @@ import ForgotPassword from "./pages/ForgotPassword";
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    Cookies.get("accessToken") !== undefined
+  );
+  
   useEffect(() => {
-    const auth = localStorage.getItem("isAuthenticated");
-    if (auth === "true") {
+    const token = Cookies.get("accessToken");
+    if (token) {
       setIsAuthenticated(true);
     }
   }, []);

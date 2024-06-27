@@ -37,7 +37,7 @@ const ModalForm = styled.form`
 const ModalInput = styled.input`
   width: 100%;
   padding: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-family: "Roboto", sans-serif;
@@ -46,6 +46,7 @@ const ModalInput = styled.input`
 const ModalActions = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: 5px;
 `;
 
 const ModalButton = styled.button`
@@ -103,12 +104,6 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
           onChange={handleChange}
           required
         />
-        <CustomSingleSelect
-          fetchUrl="http://localhost:8000/perfis"
-          placeholder="Perfil"
-          selectedValue={formData.perfil}
-          onChange={handleChange}
-        />
         <ModalInput
           type="password"
           name="senha"
@@ -116,6 +111,12 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
           value={formData.senha}
           onChange={handleChange}
           required
+        />
+        <CustomSingleSelect
+          fetchUrl="http://localhost:8000/perfis"
+          placeholder="Perfil"
+          selectedValue={formData.perfil}
+          onChange={handleChange}
         />
         <ModalActions>
           <ModalButton type="button" onClick={onClose}>
