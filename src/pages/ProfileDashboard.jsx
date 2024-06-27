@@ -82,10 +82,12 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
 
   const handleAddModalClose = () => {
     setIsAddModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleDeleteModalClose = () => {
     setIsDeleteModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleEditModalClose = () => {

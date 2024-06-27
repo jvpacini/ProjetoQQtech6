@@ -12,6 +12,7 @@ import SearchBar from "../components/SearchBar";
 
 const ModuleDashboard = ({ searchTerm, onSearch }) => {
   const [modules, setModules] = useState([]);
+  const [profiles, setProfiles] = useState([]);
   const [filteredModules, setFilteredModules] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -22,13 +23,22 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
   const rowsPerPage = 8;
 
   useEffect(() => {
+    // Fetch modules data
     fetch("http://localhost:8000/modulos")
       .then((response) => response.json())
       .then((data) => {
         setModules(data);
-        setFilteredModules(data); // Inicialmente, todos os módulos são exibidos
+        setFilteredModules(data);
       })
       .catch((error) => console.error("Erro ao carregar módulos:", error));
+
+    // Fetch profiles data
+    fetch("http://localhost:8000/perfis")
+      .then((response) => response.json())
+      .then((data) => {
+        setProfiles(data);
+      })
+      .catch((error) => console.error("Erro ao carregar perfis:", error));
   }, []);
 
   useEffect(() => {
@@ -72,6 +82,7 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
 
   const handleAddModalClose = () => {
     setIsAddModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleEditModalClose = () => {
@@ -111,7 +122,20 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
   const moduleColumns = [
     { header: "Código", field: "codigo" },
     { header: "Nome", field: "nome" },
+    { header: "Perfis", field: "perfis" },
   ];
+
+  const getProfilesForModule = (moduleCode) => {
+    return profiles
+      .filter((profile) => profile.modulos.includes(moduleCode))
+      .map((profile) => profile.nome)
+      .join(", ");
+  };
+
+  const dataWithProfiles = filteredModules.map((module) => ({
+    ...module,
+    perfis: getProfilesForModule(module.codigo),
+  }));
 
   return (
     <div className="content">
@@ -120,7 +144,7 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={moduleColumns}
-        data={filteredModules}
+        data={dataWithProfiles}
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />

@@ -32,7 +32,7 @@ function App() {
           />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route
-            path="/users"
+            path="/"
             element={
               <PrivateRoute isAuthenticated={isAuthenticated}>
                 <UserDashboard
@@ -87,7 +87,7 @@ function App() {
             }
           />
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <PrivateRoute isAuthenticated={isAuthenticated}>
                 <Dashboard searchTerm={searchTerm} onSearch={setSearchTerm} />

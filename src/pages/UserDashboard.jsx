@@ -83,6 +83,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
   const handleModalClose = () => {
     setIsModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handleDeleteModalClose = () => {
