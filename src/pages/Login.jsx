@@ -1,9 +1,8 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../assets/logo.png";
-import { loginUser } from "../services/api"; // Import the API service
+import useLoginHandler from "../components/LoginHandler";
 
 const LoginPage = styled.div`
   font-family: "Roboto", sans-serif;
@@ -96,20 +95,11 @@ const Button = styled.button`
 function Login({ setIsAuthenticated }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const { handleLogin } = useLoginHandler(setIsAuthenticated);
 
-  const handleLogin = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await loginUser(email, password);
-      console.log('Login successful:', response.data);
-      setIsAuthenticated(true);
-      localStorage.setItem("isAuthenticated", "true");
-      navigate("/");
-    } catch (error) {
-      console.error('Login error:', error);
-      alert("Usuário ou senha incorretos");
-    }
+    handleLogin(email, password);
   };
 
   return (
@@ -118,21 +108,23 @@ function Login({ setIsAuthenticated }) {
         <Logo src={logo} alt="Projeto BE-A-BA" />
         <LoginBox>
           <Title>Login</Title>
-          <Form onSubmit={handleLogin}>
+          <Form onSubmit={onSubmit}>
             <Label>Email</Label>
             <Input
               type="email"
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required />
+              required
+            />
             <Label>Senha</Label>
             <Input
               type="password"
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required />
+              required
+            />
             <ForgotPassword href="/forgot-password">
               Esqueceu a senha?
             </ForgotPassword>
