@@ -1,7 +1,10 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./SideBar.css";
+import PropTypes from 'prop-types';
 
-function SideBar() {
+function SideBar({ setIsAuthenticated }) {
+  const navigate = useNavigate();
+
   const items = [
     { name: "Usuários", url: "/" },
     { name: "Módulos", url: "/modules" },
@@ -11,9 +14,20 @@ function SideBar() {
     { name: "Dashboard", url: "/dashboard" },
   ];
 
+  const handleLogOut = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("isAuthenticated");
+    navigate("/login");
+    console.log("logout success");
+  };
+
   return (
     <nav className="sidebar">
-      <img src="/src/assets/logo.png" alt="Projeto BE-A-BA" className="logo" />
+      <img
+        src="/src/assets/logo.png"
+        alt="Projeto BE-A-BA"
+        className="logo"
+      />
       {items.map((item) => (
         <NavLink
           key={item.url}
@@ -36,10 +50,15 @@ function SideBar() {
           src="/src/assets/logout_icon.png"
           alt="Logout"
           className="logout-icon"
+          onClick={handleLogOut}
         />
       </div>
     </nav>
   );
 }
+
+SideBar.propTypes = {
+  setIsAuthenticated: PropTypes.func.isRequired,
+};
 
 export default SideBar;

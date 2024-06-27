@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import logo from "../assets/logo.png";
+import { loginUser } from "../services/api"; // Import the API service
 
 const LoginPage = styled.div`
   font-family: "Roboto", sans-serif;
@@ -97,13 +98,16 @@ function Login({ setIsAuthenticated }) {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === "user@example.com" && password === "password") {
+    try {
+      const response = await loginUser(email, password);
+      console.log('Login successful:', response.data);
       setIsAuthenticated(true);
       localStorage.setItem("isAuthenticated", "true");
       navigate("/");
-    } else {
+    } catch (error) {
+      console.error('Login error:', error);
       alert("Usuário ou senha incorretos");
     }
   };
