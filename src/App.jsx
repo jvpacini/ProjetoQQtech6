@@ -10,6 +10,7 @@ import FunctionDashboard from "./pages/FunctionDashboard";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
+import ChangePassword from "./pages/ChangePassword"; 
 import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
@@ -17,7 +18,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     Cookies.get("accessToken") !== undefined
   );
-  
+
   useEffect(() => {
     const token = Cookies.get("accessToken");
     if (token) {
@@ -34,6 +35,7 @@ function App() {
             element={<Login setIsAuthenticated={setIsAuthenticated} />}
           />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/recover-password/:token" element={<ChangePassword />} />
           <Route
             path="/"
             element={

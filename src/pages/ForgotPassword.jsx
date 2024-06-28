@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import logo from "../assets/logo.png"; // Atualize o caminho conforme necessário
+import { useState } from 'react';
+import axios from 'axios';
+import styled from 'styled-components';
 
 const ForgotPasswordPage = styled.div`
   font-family: "Roboto", sans-serif;
@@ -18,26 +17,19 @@ const Container = styled.div`
   text-align: left;
 `;
 
-const Logo = styled.img`
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  width: 200px;
-`;
-
 const ForgotPasswordBox = styled.div`
   background-color: #f0fff7;
   padding: 30px 70px;
   border-radius: 10px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: 600px; /* Aumentar a largura para 600px */
+  width: 500px;
   position: relative;
 `;
 
 const Title = styled.h1`
   font-family: "Outfit", sans-serif;
   font-weight: 700;
-  margin-bottom: 1px;
+  margin-bottom: 20px;
   font-size: 42px;
   color: #333;
   position: relative;
@@ -68,11 +60,6 @@ const Input = styled.input`
   }
 `;
 
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-`;
-
 const Button = styled.button`
   padding: 10px;
   border: none;
@@ -82,59 +69,47 @@ const Button = styled.button`
   font-size: 16px;
   cursor: pointer;
   width: 150px;
+  align-self: flex-end;
   &:hover {
     background-color: #b0b0b0;
   }
 `;
 
-const Message = styled.p`
-  font-size: 16px;
-  color: green;
-  margin-top: 1px;
-  text-align: center;
-`;
-
-function ForgotPassword() {
+const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Lógica para enviar o link de recuperação de senha
-    setMessage("Link de recuperação enviado com sucesso!");
-  };
-
-  const handleBackToLogin = () => {
-    navigate("/login");
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/send-recovery-email', { email });
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(error.response.data.error);
+    }
   };
 
   return (
     <ForgotPasswordPage>
       <Container>
-        <Logo src={logo} alt="Projeto BE-A-BA" />
         <ForgotPasswordBox>
-          <Title>Recuperação de senha</Title>
+          <Title>Recuperar Senha</Title>
           <Form onSubmit={handleSubmit}>
             <Label>Email</Label>
             <Input
               type="email"
-              placeholder="Digite seu e-mail"
+              placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required />
-            {message && <Message>{message}</Message>}
-            <ButtonContainer>
-              <Button type="button" onClick={handleBackToLogin}>
-                Voltar
-              </Button>
-              <Button type="submit">Confirmar</Button>
-            </ButtonContainer>
+              required
+            />
+            <Button type="submit">Enviar</Button>
           </Form>
+          {message && <p>{message}</p>}
         </ForgotPasswordBox>
       </Container>
     </ForgotPasswordPage>
   );
-}
+};
 
 export default ForgotPassword;

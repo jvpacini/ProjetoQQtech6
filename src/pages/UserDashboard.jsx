@@ -11,6 +11,8 @@ import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import Dropdown from "../components/Dropdown";
 import CustomMultiSelect from "../components/CustomMultiSelect";
+import api from "../services/api";
+import Cookies from "js-cookie";
 
 const UserDashboard = ({ searchTerm, onSearch }) => {
   const [users, setUsers] = useState([]);
@@ -26,20 +28,24 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   const rowsPerPage = 7;
 
   useEffect(() => {
-    fetch("http://localhost:8000/users")
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data);
-        setFilteredUsers(data); // Inicialmente, todos os usuários são exibidos
-      })
-      .catch((error) => console.error("Erro ao carregar usuários:", error));
-
-    fetch("http://localhost:8000/perfis")
-      .then((response) => response.json())
-      .then((data) => {
-        setProfiles(data);
-      })
-      .catch((error) => console.error("Erro ao carregar perfis:", error));
+    const fetchData = async () => {
+      try {
+        const token = Cookies.get("accessToken");
+        if (!token) {
+          throw new Error("No token found. Please log in.");
+        }
+        const [usersResponse, profilesResponse] = await Promise.all([
+          api.get("/api/usuarios"),
+          api.get("/api/perfis"),
+        ]);
+        setUsers(usersResponse.data);
+        setFilteredUsers(usersResponse.data);
+        setProfiles(profilesResponse.data);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -69,7 +75,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsDeleteModalVisible(true);
     } else {
-      alert("Por favor, selecione um usuário para remover.");
+      alert("Please select a user to remove.");
     }
   };
 
@@ -77,7 +83,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Por favor, selecione um usuário para editar.");
+      alert("Please select a user to edit.");
     }
   };
 
@@ -88,12 +94,12 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
   const handleDeleteModalClose = () => {
     setIsDeleteModalVisible(false);
-    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
+    setSelectedRow(null);
   };
 
   const handleEditModalClose = () => {
     setIsEditModalVisible(false);
-    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
+    setSelectedRow(null);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -101,74 +107,59 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleConfirm = (selectedProfiles) => {
-    // TODO: Lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
-    console.log("Perfis selecionados:", selectedProfiles);
+    console.log("Selected profiles:", selectedProfiles);
     setIsModalVisible(false);
   };
 
-  const handleDeleteConfirm = () => {
-    // TODO: Lógica de exclusão aqui
+  const handleDeleteConfirm = async () => {
     if (selectedRow) {
-      fetch(`http://localhost:8000/users/${selectedRow.id}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (response.ok) {
-            setUsers(users.filter((user) => user.id !== selectedRow.id));
-            setSelectedRow(null);
-          }
-        })
-        .catch((error) => console.error("Erro ao deletar usuário:", error));
+      try {
+        await api.delete(`/api/usuarios/${selectedRow.id}`);
+        setUsers(users.filter((user) => user.id !== selectedRow.id));
+        setSelectedRow(null);
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      }
     }
     setIsDeleteModalVisible(false);
   };
 
-  const handleEditConfirm = (updatedUser) => {
-    // TODO: Adicione a lógica de atualização aqui
-    fetch(`http://localhost:8000/users/${updatedUser.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setUsers(
-            users.map((user) =>
-              user.id === updatedUser.id ? updatedUser : user
-            )
-          );
-          setSelectedRow(null);
-        }
-      })
-      .catch((error) => console.error("Erro ao atualizar usuário:", error));
+  const handleEditConfirm = async (updatedUser) => {
+    try {
+      await api.put(`/api/usuarios/${updatedUser.id}`, updatedUser);
+      setUsers(
+        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+      );
+      setSelectedRow(null);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
     setIsEditModalVisible(false);
   };
 
   const userButtons = [
-    { text: "Adicionar usuário", onClick: handleAddUserClick },
-    { text: "Remover usuário", onClick: handleRemoveUserClick },
-    { text: "Editar", onClick: handleEditUserClick },
+    { text: "Add User", onClick: handleAddUserClick },
+    { text: "Remove User", onClick: handleRemoveUserClick },
+    { text: "Edit", onClick: handleEditUserClick },
   ];
 
   const userColumns = [
     { header: "ID", field: "id" },
-    { header: "Nome", field: "nome" },
-    { header: "E-mail", field: "email" },
-    { header: "Perfil", field: "perfil" },
+    { header: "Name", field: "nome" },
+    { header: "Email", field: "email" },
+    { header: "Profile", field: "perfil" },
   ];
 
   return (
     <div className="content">
       <SideBar />
-      <h1>Usuários</h1>
+      <h1>Users</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <Dropdown
         options={profiles.map((profile) => profile.nome)}
         selectedOption={selectedProfile}
         onSelect={setSelectedProfile}
-        placeholder="Todos os perfis"
+        placeholder="All profiles"
       />
       <DynamicTable
         columns={userColumns}
@@ -189,30 +180,30 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       <AddUserModal
         isVisible={isModalVisible}
         onClose={handleModalClose}
-        title="Cadastro de usuário"
+        title="Add User"
         onConfirm={handleConfirm}
-        fetchUrl="http://localhost:8000/perfis"
+        fetchUrl="http://localhost:5050/api/perfis"
       >
         <form>
-          <input type="text" placeholder="Nome completo" required />
-          <input type="email" placeholder="E-mail" required />
+          <input type="text" placeholder="Full Name" required />
+          <input type="email" placeholder="Email" required />
           <CustomMultiSelect
-            placeholder="Perfis"
-            fetchUrl="http://localhost:8000/perfis"
+            placeholder="Profiles"
+            fetchUrl="http://localhost:5050/api/perfis"
             onChange={(selected) => console.log(selected)}
           />
-          <input type="password" placeholder="Senha" required />
+          <input type="password" placeholder="Password" required />
         </form>
       </AddUserModal>
       <DeleteUserModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Confirmação de Exclusão"
+        title="Delete Confirmation"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow
             ? [
-                { label: "Nome", value: selectedRow.nome },
+                { label: "Name", value: selectedRow.nome },
                 { label: "Email", value: selectedRow.email },
               ]
             : []
@@ -221,7 +212,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       <EditUserModal
         isVisible={isEditModalVisible}
         onClose={handleEditModalClose}
-        title="Editar usuário"
+        title="Edit User"
         onConfirm={handleEditConfirm}
         userData={selectedRow ?? {}}
       />
