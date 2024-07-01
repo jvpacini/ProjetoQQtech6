@@ -4,41 +4,67 @@ import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
 import AddProfileModal from "../components/AddProfileModal";
-import DeleteModal from "../components/DeleteModal";
 import EditProfileModal from "../components/EditProfileModal";
+import DeleteModal from "../components/DeleteModal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
-import Dropdown from "../components/Dropdown";
+import api from "../services/api";
+import Cookies from "js-cookie";
 
 const ProfileDashboard = ({ searchTerm, onSearch }) => {
   const [profiles, setProfiles] = useState([]);
-  const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [modules, setModules] = useState([]);
-  const [selectedModule, setSelectedModule] = useState("");
+  const [profileModules, setProfileModules] = useState([]);
+  const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const rowsPerPage = 8;
+  const rowsPerPage = 7;
 
   useEffect(() => {
-    fetch("http://localhost:8000/perfis")
-      .then((response) => response.json())
-      .then((data) => {
-        setProfiles(data);
-        setFilteredProfiles(data); // Inicialmente, todos os perfis são exibidos
-      })
-      .catch((error) => console.error("Erro ao carregar perfis:", error));
+    const fetchData = async () => {
+      try {
+        const token = Cookies.get("accessToken");
+        if (!token) {
+          throw new Error("No token found. Please log in.");
+        }
+        const [profilesResponse, modulesResponse, profileModulesResponse] =
+          await Promise.all([
+            api.get("/perfis"),
+            api.get("/modulos"),
+            api.get("/perfil-modulos"),
+          ]);
 
-    fetch("http://localhost:8000/modulos")
-      .then((response) => response.json())
-      .then((data) => {
-        setModules(data);
-      })
-      .catch((error) => console.error("Erro ao carregar módulos:", error));
+        const profilesData = profilesResponse.data;
+        const modulesData = modulesResponse.data;
+        const profileModulesData = profileModulesResponse.data;
+
+        const profilesWithModules = profilesData.map((profile) => ({
+          ...profile,
+          modules: profileModulesData
+            .filter((pm) => pm.id_perfil === profile.id_perfil)
+            .map((pm) => {
+              const module = modulesData.find(
+                (m) => m.id_modulo === pm.id_modulo
+              );
+              return module ? module.codigo_modulo : null;
+            })
+            .filter(Boolean),
+        }));
+
+        setProfiles(profilesWithModules);
+        setFilteredProfiles(profilesWithModules);
+        setModules(modulesData);
+        setProfileModules(profileModulesData);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -46,19 +72,15 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
 
     if (searchTerm) {
       filtered = filtered.filter((profile) =>
-        profile.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        profile.nome_perfil.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (selectedModule) {
-      filtered = filtered.filter((profile) =>
-        profile.modulos.includes(selectedModule)
-      );
-    }
-
-    setFilteredProfiles(filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage));
+    setFilteredProfiles(
+      filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    );
     setTotalPages(Math.ceil(filtered.length / rowsPerPage));
-  }, [profiles, searchTerm, selectedModule, currentPage]);
+  }, [profiles, searchTerm, currentPage]);
 
   const handleAddProfileClick = () => {
     setIsAddModalVisible(true);
@@ -68,7 +90,7 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsDeleteModalVisible(true);
     } else {
-      alert("Por favor, selecione um perfil para remover.");
+      alert("Please select a profile to remove.");
     }
   };
 
@@ -76,12 +98,13 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Por favor, selecione um perfil para editar.");
+      alert("Please select a profile to edit.");
     }
   };
 
-  const handleAddModalClose = () => {
+  const handleModalClose = () => {
     setIsAddModalVisible(false);
+    setIsEditModalVisible(false);
     setSelectedRow(null);
   };
 
@@ -90,98 +113,104 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
     setSelectedRow(null);
   };
 
-  const handleEditModalClose = () => {
-    setIsEditModalVisible(false);
-    setSelectedRow(null);
-  };
-
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleAddConfirm = (newProfile) => {
-    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
-    fetch("http://localhost:8000/perfis", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newProfile),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setProfiles([...profiles, data]);
-        setIsAddModalVisible(false);
-      })
-      .catch((error) => console.error("Erro ao adicionar perfil:", error));
+  const handleAddConfirm = async (newProfile) => {
+    try {
+      const response = await api.post("/perfis", newProfile);
+      const newProfileData = response.data;
+      const moduleAssociations = newProfile.modules.map((moduleId) => ({
+        id_perfil: newProfileData.id_perfil,
+        id_modulo: moduleId,
+      }));
+      await Promise.all(
+        moduleAssociations.map((assoc) => api.post("/perfil-modulos", assoc))
+      );
+      setProfiles([...profiles, newProfileData]);
+    } catch (error) {
+      console.error("Error adding profile:", error);
+    }
+    setIsAddModalVisible(false);
   };
 
-  const handleDeleteConfirm = () => {
-    // TODO: Lógica de exclusão aqui
+  const handleEditConfirm = async (updatedProfile) => {
+    try {
+      await api.put(`/perfis/${updatedProfile.id_perfil}`, updatedProfile);
+      await api.delete(`/perfil-modulos/${updatedProfile.id_perfil}`);
+      const moduleAssociations = updatedProfile.modules.map((moduleId) => ({
+        id_perfil: updatedProfile.id_perfil,
+        id_modulo: moduleId,
+      }));
+      await Promise.all(
+        moduleAssociations.map((assoc) => api.post("/perfil-modulos", assoc))
+      );
+      setProfiles(
+        profiles.map((profile) =>
+          profile.id_perfil === updatedProfile.id_perfil
+            ? updatedProfile
+            : profile
+        )
+      );
+      setSelectedRow(null);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    }
+    setIsEditModalVisible(false);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (selectedRow) {
-      fetch(`http://localhost:8000/perfis/${selectedRow.id}`, {
-        method: "DELETE",
-      })
-        .then((response) => {
-          if (response.ok) {
-            setProfiles(profiles.filter((profile) => profile.id !== selectedRow.id));
-            setSelectedRow(null);
-          }
-        })
-        .catch((error) => console.error("Erro ao deletar perfil:", error));
+      try {
+        await api.delete(`/perfis/${selectedRow.id_perfil}`);
+        await api.delete(`/perfil-modulos/${selectedRow.id_perfil}`);
+        setProfiles(
+          profiles.filter(
+            (profile) => profile.id_perfil !== selectedRow.id_perfil
+          )
+        );
+        setSelectedRow(null);
+      } catch (error) {
+        console.error("Error deleting profile:", error);
+      }
     }
     setIsDeleteModalVisible(false);
   };
 
-  const handleEditConfirm = (updatedProfile) => {
-    // TODO: Adicione a lógica de atualização aqui
-    fetch(`http://localhost:8000/perfis/${updatedProfile.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedProfile),
-    })
-      .then((response) => {
-        if (response.ok) {
-          setProfiles(
-            profiles.map((profile) => (profile.id === updatedProfile.id ? updatedProfile : profile))
-          );
-          setSelectedRow(null);
-        }
-      })
-      .catch((error) => console.error("Erro ao atualizar perfil:", error));
-    setIsEditModalVisible(false);
-  };
-
   const profileButtons = [
-    { text: "Adicionar Perfil", onClick: handleAddProfileClick },
-    { text: "Remover Perfil", onClick: handleRemoveProfileClick },
-    { text: "Editar Perfil", onClick: handleEditProfileClick },
+    { text: "Add Profile", onClick: handleAddProfileClick },
+    { text: "Remove Profile", onClick: handleRemoveProfileClick },
+    { text: "Edit Profile", onClick: handleEditProfileClick },
   ];
 
   const profileColumns = [
-    { header: "ID", field: "id" },
-    { header: "Nome", field: "nome" },
-    { header: "Módulos", field: "modulos" },
+    { header: "ID", field: "id_perfil" },
+    { header: "Profile Name", field: "nome_perfil" },
+    {
+      header: "Modules",
+      field: "modules",
+      render: (modules) => modules.join(", "),
+    },
   ];
 
   return (
     <div className="content">
       <SideBar />
-      <h1>Perfis</h1>
+      <h1>Profiles</h1>
       <SearchBar data={[]} onSearch={onSearch} />
-      <Dropdown
-        options={modules.map((module) => module.codigo)}
-        selectedOption={selectedModule}
-        onSelect={setSelectedModule}
-        placeholder="Módulos"
-      />
       <DynamicTable
         columns={profileColumns}
         data={filteredProfiles}
         maxRows={10}
-        onRowClick={(row) => setSelectedRow(row)}
+        onRowClick={(row) => {
+          setSelectedRow({
+            id_perfil: row.id_perfil,
+            nome_perfil: row.nome_perfil,
+            descricao: row.descricao,
+          });
+          console.log(row);
+        }}
       />
       <Pagination
         currentPage={currentPage}
@@ -189,35 +218,40 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
         onPageChange={handlePageChange}
       />
       <ActionButtons buttons={profileButtons} />
-      <Cover isVisible={isAddModalVisible || isDeleteModalVisible || isEditModalVisible} onClose={handleAddModalClose} />
+      <Cover
+        isVisible={
+          isAddModalVisible || isEditModalVisible || isDeleteModalVisible
+        }
+        onClose={handleModalClose}
+      />
       <AddProfileModal
         isVisible={isAddModalVisible}
-        onClose={handleAddModalClose}
-        title="Cadastro de Perfil"
+        onClose={handleModalClose}
+        title="Add Profile"
         onConfirm={handleAddConfirm}
-        fetchUrl="http://localhost:8000/modulos"
+        fetchUrl="http://localhost:5050/api/modulos"
+      />
+      <EditProfileModal
+        isVisible={isEditModalVisible}
+        onClose={handleModalClose}
+        title="Edit Profile"
+        onConfirm={handleEditConfirm}
+        profileData={selectedRow}
+        fetchUrl="http://localhost:5050/api/modulos"
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Confirmação de Exclusão"
+        title="Delete Profile"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow
             ? [
-                { label: "Nome", value: selectedRow.nome },
-                { label: "Módulos", value: selectedRow.modulos.join(", ") },
+                { label: "Profile Name", value: selectedRow.nome_perfil },
+                { label: "Description", value: selectedRow.descricao },
               ]
             : []
         }
-      />
-      <EditProfileModal
-        isVisible={isEditModalVisible}
-        onClose={handleEditModalClose}
-        title="Editar Perfil"
-        onConfirm={handleEditConfirm}
-        profileData={selectedRow}
-        fetchUrl="http://localhost:8000/modulos"
       />
     </div>
   );

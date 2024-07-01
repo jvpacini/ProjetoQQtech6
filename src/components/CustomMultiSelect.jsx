@@ -1,39 +1,55 @@
-import { useState, useEffect } from "react";
-import Select from "react-select";
+import { useEffect, useState } from "react";
+import AsyncSelect from "react-select/async";
 import PropTypes from "prop-types";
+import api from "../services/api";
 
-const CustomMultiSelect = ({ fetchUrl, placeholder, onChange, defaultValue }) => {
-  const [options, setOptions] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState(defaultValue || []);
+const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
+  const [defaultOptions, setDefaultOptions] = useState([]);
 
   useEffect(() => {
-    fetch(fetchUrl)
-      .then((response) => response.json())
-      .then((data) => {
-        const formattedOptions = data.map((item) => ({
-          value: item.codigo || item.value,
-          label: item.nome || item.label,
+    const fetchData = async () => {
+      try {
+        const response = await api.get(fetchUrl);
+        const formattedOptions = response.data.map((item) => ({
+          value: item.id_modulo,
+          label: item.codigo_modulo,
         }));
-        setOptions(formattedOptions);
-      })
-      .catch((error) => console.error("Error loading options:", error));
+        setDefaultOptions(formattedOptions);
+      } catch (error) {
+        console.error("Erro ao carregar módulos:", error);
+      }
+    };
+    fetchData();
   }, [fetchUrl]);
 
-  useEffect(() => {
-    setSelectedOptions(defaultValue);
-  }, [defaultValue]);
+  const loadOptions = async (inputValue, callback) => {
+    try {
+      const response = await api.get(fetchUrl);
+      const formattedOptions = response.data.map((item) => ({
+        value: item.id_modulo,
+        label: item.codigo_modulo,
+      }));
+      callback(
+        formattedOptions.filter((option) =>
+          option.label.toLowerCase().includes(inputValue.toLowerCase())
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao carregar módulos:", error);
+    }
+  };
 
   const handleChange = (selected) => {
-    setSelectedOptions(selected);
     onChange(selected);
   };
 
   return (
-    <Select
+    <AsyncSelect
       isMulti
-      value={selectedOptions}
+      cacheOptions
+      defaultOptions={defaultOptions}
+      loadOptions={loadOptions}
       onChange={handleChange}
-      options={options}
       placeholder={placeholder}
     />
   );
@@ -43,7 +59,6 @@ CustomMultiSelect.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  defaultValue: PropTypes.array,
 };
 
 export default CustomMultiSelect;
