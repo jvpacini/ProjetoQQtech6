@@ -2,6 +2,7 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import CustomSingleSelect from "./CustomSingleSelect";
+import api from "../services/api";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -60,12 +61,56 @@ const ActionButton = styled.button`
   }
 `;
 
-const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
-  const [selectedProfiles, setSelectedProfiles] = useState([]);
+const ErrorMessage = styled.p`
+  color: red;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  margin-bottom: 15px;
+`;
 
-  const handleConfirm = () => {
-    onConfirm(selectedProfiles);
-    onClose();
+const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [profile, setProfile] = useState(null);
+  const [codigoUsuario, setCodigoUsuario] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleConfirm = async () => {
+    // Email and password validations
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Invalid email address");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (!Number.isInteger(Number(codigoUsuario))) {
+      setErrorMessage("Codigo Usuario must be an integer");
+      return;
+    }
+
+    // Clear any previous error message
+    setErrorMessage("");
+
+    // Call the API to add the user
+    try {
+      await api.post("/usuarios", {
+        nome_completo: name,
+        email: email,
+        senha: password,
+        id_perfil: profile,
+        codigo_usuario: Number(codigoUsuario),
+      });
+      onConfirm();
+      onClose();
+    } catch (error) {
+      setErrorMessage("Error adding user: " + error.message);
+    }
   };
 
   if (!isVisible) return null;
@@ -74,20 +119,46 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        <ModalInput type="text" placeholder="Nome completo" required />
-        <ModalInput type="email" placeholder="E-mail" required />
-        <ModalInput type="password" placeholder="Senha" required />
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        <ModalInput
+          type="text"
+          placeholder="Codigo Usuario"
+          value={codigoUsuario}
+          onChange={(e) => setCodigoUsuario(e.target.value)}
+          required
+        />
+        <ModalInput
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <ModalInput
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <ModalInput
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
         <CustomSingleSelect
           fetchUrl={fetchUrl}
-          placeholder="Perfil"
-          onChange={setSelectedProfiles}
+          placeholder="Profile"
+          onChange={setProfile}
         />
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
-            Voltar
+            Back
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
-            Confirmar
+            Confirm
           </ActionButton>
         </FormActions>
       </ModalForm>

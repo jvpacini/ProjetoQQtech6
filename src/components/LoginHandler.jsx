@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 import { loginUser } from "../services/api";
 
 const useLoginHandler = (setIsAuthenticated) => {
@@ -8,9 +7,8 @@ const useLoginHandler = (setIsAuthenticated) => {
   const handleLogin = async (email, password) => {
     try {
       const response = await loginUser(email, password);
-      console.log("Login successful:", response.data);
+      console.log("Login handler successful:", response.data);
       setIsAuthenticated(true);
-      Cookies.set("accessToken", response.data.token, { expires: 1/24 }); // Store the token as a cookie for 1 hour
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);

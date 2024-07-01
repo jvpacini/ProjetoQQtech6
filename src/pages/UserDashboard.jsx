@@ -35,11 +35,19 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
           throw new Error("No token found. Please log in.");
         }
         const [usersResponse, profilesResponse] = await Promise.all([
-          api.get("/api/usuarios"),
-          api.get("/api/perfis"),
+          api.get("/usuarios"),
+          api.get("/perfis"),
         ]);
-        setUsers(usersResponse.data);
-        setFilteredUsers(usersResponse.data);
+        const profilesData = profilesResponse.data.reduce((acc, profile) => {
+          acc[profile.id_perfil] = profile.nome_perfil; // Adjusted field names based on schema
+          return acc;
+        }, {});
+        const usersWithProfileNames = usersResponse.data.map((user) => ({
+          ...user,
+          perfilNome: profilesData[user.id_perfil] || "N/A", // Map profile ID to profile name
+        }));
+        setUsers(usersWithProfileNames);
+        setFilteredUsers(usersWithProfileNames);
         setProfiles(profilesResponse.data);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -53,12 +61,12 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
     if (searchTerm) {
       filtered = filtered.filter((user) =>
-        user.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        user.nome_completo.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (selectedProfile) {
-      filtered = filtered.filter((user) => user.perfil === selectedProfile);
+      filtered = filtered.filter((user) => user.perfilNome === selectedProfile);
     }
 
     setFilteredUsers(
@@ -114,8 +122,10 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   const handleDeleteConfirm = async () => {
     if (selectedRow) {
       try {
-        await api.delete(`/api/usuarios/${selectedRow.id}`);
-        setUsers(users.filter((user) => user.id !== selectedRow.id));
+        await api.delete(`/usuarios/${selectedRow.id_usuario}`);
+        setUsers(
+          users.filter((user) => user.id_usuario !== selectedRow.id_usuario)
+        );
         setSelectedRow(null);
       } catch (error) {
         console.error("Error deleting user:", error);
@@ -126,9 +136,11 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
 
   const handleEditConfirm = async (updatedUser) => {
     try {
-      await api.put(`/api/usuarios/${updatedUser.id}`, updatedUser);
+      await api.put(`/usuarios/${updatedUser.id_usuario}`, updatedUser);
       setUsers(
-        users.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+        users.map((user) =>
+          user.id_usuario === updatedUser.id_usuario ? updatedUser : user
+        )
       );
       setSelectedRow(null);
     } catch (error) {
@@ -144,10 +156,10 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   ];
 
   const userColumns = [
-    { header: "ID", field: "id" },
-    { header: "Name", field: "nome" },
+    { header: "Código", field: "codigo_usuario" },
+    { header: "Nome", field: "nome_completo" },
     { header: "Email", field: "email" },
-    { header: "Profile", field: "perfil" },
+    { header: "Perfil", field: "perfilNome" }, // Use perfilNome to display profile name
   ];
 
   return (
@@ -156,7 +168,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       <h1>Users</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <Dropdown
-        options={profiles.map((profile) => profile.nome)}
+        options={profiles.map((profile) => profile.nome_perfil)}
         selectedOption={selectedProfile}
         onSelect={setSelectedProfile}
         placeholder="All profiles"
@@ -203,7 +215,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
         fields={
           selectedRow
             ? [
-                { label: "Name", value: selectedRow.nome },
+                { label: "Name", value: selectedRow.nome_completo },
                 { label: "Email", value: selectedRow.email },
               ]
             : []
