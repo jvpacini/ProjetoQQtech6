@@ -145,21 +145,21 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const functionButtons = [
-    { text: "Add Function", onClick: handleAddFunctionClick },
-    { text: "Remove Function", onClick: handleRemoveFunctionClick },
-    { text: "Edit Function", onClick: handleEditFunctionClick },
+    { text: "Adicionar função", onClick: handleAddFunctionClick },
+    { text: "Remover função", onClick: handleRemoveFunctionClick },
+    { text: "Editar função", onClick: handleEditFunctionClick },
   ];
 
   const functionColumns = [
-    { header: "Code", field: "codigo_funcao" },
-    { header: "Name", field: "nome_funcao" },
-    { header: "Description", field: "descricao" },
+    { header: "Código", field: "codigo_funcao" },
+    { header: "Nome", field: "nome_funcao" },
+    { header: "Descrição", field: "descricao" },
   ];
 
   return (
     <div className="content">
       <SideBar />
-      <h1>Functions</h1>
+      <h1>Funções</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={functionColumns}
@@ -182,37 +182,37 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       <SimpleAddModal
         isVisible={isAddModalVisible}
         onClose={handleModalClose}
-        title="Add Function"
+        title="Adicionar Função"
         onConfirm={handleAddConfirm}
         fields={[
-          { label: "Code", name: "codigo_funcao", type: "text" },
-          { label: "Name", name: "nome_funcao", type: "text" },
-          { label: "Description", name: "descricao", type: "text" },
+          { label: "Código", name: "codigo_funcao", type: "text" },
+          { label: "Nome", name: "nome_funcao", type: "text" },
+          { label: "Descrição", name: "descricao", type: "text" },
         ]}
       />
       <SimpleEditModal
         isVisible={isEditModalVisible}
         onClose={handleModalClose}
-        title="Edit Function"
+        title="Editar Função"
         onConfirm={handleEditConfirm}
         fields={[
-          { label: "Code", name: "codigo_funcao", type: "text" },
-          { label: "Name", name: "nome_funcao", type: "text" },
-          { label: "Description", name: "descricao", type: "text" },
+          { label: "Código", name: "codigo_funcao", type: "text" },
+          { label: "Nome", name: "nome_funcao", type: "text" },
+          { label: "Descrição", name: "descricao", type: "text" },
         ]}
         rowData={selectedRow}
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Delete Function"
+        title="Deletar função"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow
             ? [
-                { label: "Code", value: selectedRow.codigo_funcao },
-                { label: "Name", value: selectedRow.nome_funcao },
-                { label: "Description", value: selectedRow.descricao },
+                { label: "Código", value: selectedRow.codigo_funcao },
+                { label: "Nome", value: selectedRow.nome_funcao },
+                { label: "Descrição", value: selectedRow.descricao },
               ]
             : []
         }

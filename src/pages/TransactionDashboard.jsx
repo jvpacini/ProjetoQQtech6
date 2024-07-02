@@ -145,9 +145,9 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const transactionButtons = [
-    { text: "Add Transaction", onClick: handleAddTransactionClick },
-    { text: "Remove Transaction", onClick: handleRemoveTransactionClick },
-    { text: "Edit Transaction", onClick: handleEditTransactionClick },
+    { text: "Adicionar Transação", onClick: handleAddTransactionClick },
+    { text: "Remover Transação", onClick: handleRemoveTransactionClick },
+    { text: "Editar Transação", onClick: handleEditTransactionClick },
   ];
 
   const transactionColumns = [
@@ -159,7 +159,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
   return (
     <div className="content">
       <SideBar />
-      <h1>Transactions</h1>
+      <h1>Transações</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={transactionColumns}
@@ -182,43 +182,43 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       <SimpleAddModal
         isVisible={isAddModalVisible}
         onClose={handleModalClose}
-        title="Add Transaction"
+        title="Adicionar Transação"
         onConfirm={handleAddConfirm}
         fields={[
-          { label: "Code", name: "codigo_transacao", type: "text" },
-          { label: "Name", name: "nome_transacao", type: "text" },
-          { label: "Description", name: "descricao", type: "text" },
+          { label: "Código", name: "codigo_transacao", type: "text" },
+          { label: "Nome", name: "nome_transacao", type: "text" },
+          { label: "Descrição", name: "descricao", type: "text" },
         ]}
       />
       <SimpleEditModal
         isVisible={isEditModalVisible}
         onClose={handleModalClose}
-        title="Edit Transaction"
+        title="Editar Transação"
         onConfirm={handleEditConfirm}
         fields={[
-          { label: "Code", name: "codigo_transacao", type: "text" },
-          { label: "Name", name: "nome_transacao", type: "text" },
-          { label: "Description", name: "descricao", type: "text" },
+          { label: "Código", name: "codigo_transacao", type: "text" },
+          { label: "Nome", name: "nome_transacao", type: "text" },
+          { label: "Descrição", name: "descricao", type: "text" },
         ]}
         transactionData={selectedRow}
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Delete Transaction"
+        title="Deletar Transação"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow
             ? [
                 {
-                  label: "Transaction Code",
+                  label: "Código transação",
                   value: selectedRow.codigo_transacao,
                 },
                 {
-                  label: "Transaction Name",
+                  label: "Nome transação",
                   value: selectedRow.nome_transacao,
                 },
-                { label: "Description", value: selectedRow.descricao },
+                { label: "Descrição", value: selectedRow.descricao },
               ]
             : []
         }

@@ -151,9 +151,9 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const profileButtons = [
-    { text: "Add Profile", onClick: handleAddProfileClick },
-    { text: "Remove Profile", onClick: handleRemoveProfileClick },
-    { text: "Edit Profile", onClick: handleEditProfileClick },
+    { text: "Adicionar perfil", onClick: handleAddProfileClick },
+    { text: "Remover perfil", onClick: handleRemoveProfileClick },
+    { text: "Editar perfil", onClick: handleEditProfileClick },
   ];
 
   const profileColumns = [
@@ -168,7 +168,7 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
   return (
     <div className="content">
       <SideBar />
-      <h1>Profiles</h1>
+      <h1>Perfis</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={profileColumns}
@@ -191,14 +191,14 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
       <AddProfileModal
         isVisible={isAddModalVisible}
         onClose={handleModalClose}
-        title="Add Profile"
+        title="Adicionar perfil"
         onConfirm={handleAddConfirm}
         fetchUrl="http://localhost:5050/api/modulos"
       />
       <EditProfileModal
         isVisible={isEditModalVisible}
         onClose={handleModalClose}
-        title="Edit Profile"
+        title="Editar perfil"
         onConfirm={handleEditConfirm}
         profileData={selectedRow}
         fetchUrl="http://localhost:5050/api/modulos"
@@ -206,13 +206,13 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Delete Profile"
+        title="Remover perfil"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow
             ? [
-                { label: "Profile Name", value: selectedRow.nome_perfil },
-                { label: "Description", value: selectedRow.descricao },
+                { label: "Nome do perfil", value: selectedRow.nome_perfil },
+                { label: "Descrição", value: selectedRow.descricao },
               ]
             : []
         }

@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
+import api from "../services/api";
 
 const ProfileChart = () => {
   const [chartData, setChartData] = useState({});
 
   useEffect(() => {
-    axios.get('http://localhost:5050/api/users')
+    api.get('/usuarios')
       .then(response => {
         const users = response.data;
         const profileTypes = {};
 
         users.forEach(user => {
-          const profile = user.perfil || "Sem perfil atribuído";
+          const profile = user.id_perfil || "Sem perfil atribuído";
           profileTypes[profile] = (profileTypes[profile] || 0) + 1;
         });
 
@@ -49,7 +49,7 @@ const ProfileChart = () => {
           ],
         });
       })
-      .catch(error => console.error('Erro ao buscar dados do mockend:', error));
+      .catch(error => console.error('Erro ao buscar dados do backend:', error));
   }, []);
 
   return (
