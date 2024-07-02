@@ -34,12 +34,6 @@ function SideBar() {
       ))}
       <div className="profile-section">
         <img
-          src="/src/assets/profile_picture.png"
-          alt="Perfil"
-          className="profile-picture"
-        />
-        <span>João Paulo Cardoso</span>
-        <img
           src="/src/assets/logout_icon.png"
           alt="Logout"
           className="logout-icon"

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import api from "../services/api"; // Make sure the path is correct
+import CustomSingleSelect from "./CustomSingleSelect";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -31,84 +31,94 @@ const ModalTitle = styled.h2`
 const ModalForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
 `;
 
 const ModalInput = styled.input`
   width: 100%;
   padding: 10px;
-  margin-bottom: 5px;
+  margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
   font-family: "Roboto", sans-serif;
 `;
 
-const ModalSelect = styled.select`
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-family: "Roboto", sans-serif;
-`;
-
-const ModalActions = styled.div`
+const FormActions = styled.div`
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
 `;
 
-const ModalButton = styled.button`
+const ActionButton = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
   background-color: #d9d9d9;
   color: #333;
   cursor: pointer;
-
   &:hover {
     background-color: #c4c4c4;
   }
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  margin-bottom: 15px;
+`;
+
 const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
-  const [formData, setFormData] = useState(userData);
-  const [profiles, setProfiles] = useState([]);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("******");
+  const [profile, setProfile] = useState(null);
+  const [codigoUsuario, setCodigoUsuario] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setFormData(userData);
+    if (userData) {
+      setName(userData.nome_completo || "");
+      setEmail(userData.email || "");
+      setCodigoUsuario(userData.codigo_usuario || "");
+    }
   }, [userData]);
 
-  useEffect(() => {
-    const fetchProfiles = async () => {
-      try {
-        const response = await api.get("/perfis");
-        setProfiles(response.data);
-      } catch (error) {
-        console.error("Error loading profiles:", error);
-      }
+  const handleConfirm = async () => {
+    if (!email || !name || !password || !codigoUsuario) {
+      setErrorMessage("Todos os campos de texto devem ser preenchidos");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorMessage("Endereço de email inválido");
+      return;
+    }
+
+    if (password.length < 6) {
+      setErrorMessage("A senha deve ter pelo menos 6 letras");
+      return;
+    }
+
+    if (!Number.isInteger(Number(codigoUsuario))) {
+      setErrorMessage("Código de usuário deve ser um inteiro");
+      return;
+    }
+
+    // Clear any previous error message
+    setErrorMessage("");
+
+    const updatedUser = {
+      ...userData,
+      codigo_usuario: codigoUsuario,
+      nome_completo: name,
+      email,
+      senha: password,
+      id_perfil: profile,
     };
-    fetchProfiles();
-  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
-
-  const handleProfileChange = (e) => {
-    const selectedProfileId = parseInt(e.target.value);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      id_perfil: selectedProfileId,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onConfirm(formData);
+    onConfirm(updatedUser);
+    onClose();
   };
 
   if (!isVisible) return null;
@@ -116,49 +126,49 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
   return (
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
-      <ModalForm onSubmit={handleSubmit}>
+      <ModalForm>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ModalInput
           type="text"
-          name="nome_completo"
+          placeholder="Código Usuario"
+          value={codigoUsuario}
+          onChange={(e) => setCodigoUsuario(e.target.value)}
+          required
+        />
+        <ModalInput
+          type="text"
           placeholder="Nome completo"
-          value={formData.nome_completo}
-          onChange={handleChange}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           required
         />
         <ModalInput
           type="email"
-          name="email"
-          placeholder="E-mail"
-          value={formData.email}
-          onChange={handleChange}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <ModalInput
           type="password"
-          name="senha"
           placeholder="Senha"
-          value={formData.senha}
-          onChange={handleChange}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <ModalSelect
-          name="id_perfil"
-          value={formData.id_perfil || ""}
-          onChange={handleProfileChange}
-        >
-          <option value="">Selecione um perfil</option>
-          {profiles.map((profile) => (
-            <option key={profile.id_perfil} value={profile.id_perfil}>
-              {profile.nome_perfil}
-            </option>
-          ))}
-        </ModalSelect>
-        <ModalActions>
-          <ModalButton type="button" onClick={onClose}>
+        <CustomSingleSelect
+          fetchUrl="http://localhost:5050/api/perfis"
+          placeholder="Profile"
+          onChange={setProfile}
+        />
+        <FormActions>
+          <ActionButton type="button" onClick={onClose}>
             Voltar
-          </ModalButton>
-          <ModalButton type="submit">Confirmar</ModalButton>
-        </ModalActions>
+          </ActionButton>
+          <ActionButton type="button" onClick={handleConfirm}>
+            Confirmar
+          </ActionButton>
+        </FormActions>
       </ModalForm>
     </ModalContainer>
   );
@@ -170,11 +180,13 @@ EditUserModal.propTypes = {
   title: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
   userData: PropTypes.shape({
+    id: PropTypes.number,
     nome_completo: PropTypes.string,
     email: PropTypes.string,
     senha: PropTypes.string,
     id_perfil: PropTypes.number,
-  }).isRequired,
+    codigo_usuario: PropTypes.number,
+  }),
 };
 
 export default EditUserModal;

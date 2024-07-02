@@ -42,6 +42,7 @@ const ModalInput = styled.input`
 `;
 
 const FormActions = styled.div`
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
 `;
@@ -58,13 +59,16 @@ const ActionButton = styled.button`
   }
 `;
 
-const SimpleAddModal = ({ isVisible, onClose, title, onConfirm }) => {
-  const [codigo, setCodigo] = useState("");
-  const [nome, setNome] = useState("");
+const SimpleAddModal = ({ isVisible, onClose, title, onConfirm, fields }) => {
+  const [formData, setFormData] = useState({});
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
   const handleConfirm = () => {
-    const newModule = { codigo, nome };
-    onConfirm(newModule);
+    onConfirm(formData);
     onClose();
   };
 
@@ -74,26 +78,23 @@ const SimpleAddModal = ({ isVisible, onClose, title, onConfirm }) => {
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        <ModalInput
-          type="text"
-          value={codigo}
-          placeholder="Código do Módulo"
-          onChange={(e) => setCodigo(e.target.value)}
-          required
-        />
-        <ModalInput
-          type="text"
-          value={nome}
-          placeholder="Nome do Módulo"
-          onChange={(e) => setNome(e.target.value)}
-          required
-        />
+        {fields.map((field, index) => (
+          <ModalInput
+            key={index}
+            type="text"
+            name={field.name}
+            placeholder={field.label}
+            value={formData[field.name] || ""}
+            onChange={handleInputChange}
+            required
+          />
+        ))}
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
-            Voltar
+            Cancel
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
-            Confirmar
+            Confirm
           </ActionButton>
         </FormActions>
       </ModalForm>
@@ -106,6 +107,12 @@ SimpleAddModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
   onConfirm: PropTypes.func.isRequired,
+  fields: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
 };
 
 export default SimpleAddModal;

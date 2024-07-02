@@ -3,7 +3,13 @@ import Select from "react-select";
 import PropTypes from "prop-types";
 import api from "../services/api";
 
-const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
+const CustomMultiSelectModal = ({
+  fetchUrl,
+  placeholder,
+  onChange,
+  valueKey,
+  labelKey,
+}) => {
   const [options, setOptions] = useState([]);
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -11,18 +17,18 @@ const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
     const fetchData = async () => {
       try {
         const response = await api.get(fetchUrl);
-        const data = response.data.map((module) => ({
-          value: module.id_modulo,
-          label: module.codigo_modulo,
+        const data = response.data.map((item) => ({
+          value: item[valueKey],
+          label: item[labelKey],
         }));
         setOptions(data);
       } catch (error) {
-        console.error("Error loading modules:", error);
+        console.error("Error loading data:", error);
       }
     };
 
     fetchData();
-  }, [fetchUrl]);
+  }, [fetchUrl, valueKey, labelKey]);
 
   const handleChange = (selected) => {
     setSelectedOptions(selected);
@@ -32,6 +38,7 @@ const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
 
   return (
     <Select
+      styles={{ marginBottom: "10px" }}
       isMulti
       value={selectedOptions}
       onChange={handleChange}
@@ -41,11 +48,12 @@ const CustomMultiSelect = ({ fetchUrl, placeholder, onChange }) => {
   );
 };
 
-CustomMultiSelect.propTypes = {
+CustomMultiSelectModal.propTypes = {
   fetchUrl: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
-  defaultValue: PropTypes.array,
+  valueKey: PropTypes.string.isRequired,
+  labelKey: PropTypes.string.isRequired,
 };
 
-export default CustomMultiSelect;
+export default CustomMultiSelectModal;

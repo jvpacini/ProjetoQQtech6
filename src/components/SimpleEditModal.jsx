@@ -42,6 +42,7 @@ const ModalInput = styled.input`
 `;
 
 const FormActions = styled.div`
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
 `;
@@ -58,26 +59,29 @@ const ActionButton = styled.button`
   }
 `;
 
-const SimpleEditModal = ({ isVisible, onClose, title, item, onConfirm, fields }) => {
+const SimpleEditModal = ({
+  isVisible,
+  onClose,
+  title,
+  onConfirm,
+  fields,
+  rowData,
+}) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
-    if (item) {
-      const initialFormData = fields.reduce((acc, field) => {
-        acc[field.name] = item[field.name] || "";
-        return acc;
-      }, {});
-      setFormData(initialFormData);
+    if (rowData) {
+      setFormData(rowData);
     }
-  }, [item, fields]);
+  }, [rowData]);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleConfirm = () => {
-    const updatedItem = { ...item, ...formData };
-    onConfirm(updatedItem);
+    onConfirm(formData);
     onClose();
   };
 
@@ -87,23 +91,23 @@ const SimpleEditModal = ({ isVisible, onClose, title, item, onConfirm, fields })
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
-        {fields.map((field) => (
+        {fields.map((field, index) => (
           <ModalInput
-            key={field.name}
-            type={field.type}
+            key={index}
+            type="text"
             name={field.name}
-            value={formData[field.name] || ""}
             placeholder={field.label}
-            onChange={handleChange}
-            required={field.required}
+            value={formData[field.name] || ""}
+            onChange={handleInputChange}
+            required
           />
         ))}
         <FormActions>
           <ActionButton type="button" onClick={onClose}>
-            Voltar
+            Cancel
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
-            Confirmar
+            Confirm
           </ActionButton>
         </FormActions>
       </ModalForm>
@@ -115,16 +119,14 @@ SimpleEditModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  item: PropTypes.object,
   onConfirm: PropTypes.func.isRequired,
   fields: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
-      required: PropTypes.bool.isRequired,
     })
   ).isRequired,
+  rowData: PropTypes.object,
 };
 
 export default SimpleEditModal;

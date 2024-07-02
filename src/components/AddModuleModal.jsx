@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import CustomMultiSelect from "./CustomMultiSelect";
+import CustomMultiSelectModule from "./CustomMultiSelectModule";
 
 const ModalContainer = styled.div`
   background-color: #f7f6f6;
@@ -67,42 +67,34 @@ const ErrorMessage = styled.p`
   margin-bottom: 15px;
 `;
 
-const EditProfileModal = ({
-  isVisible,
-  onClose,
-  title,
-  profileData,
-  onConfirm,
-  fetchUrl,
-}) => {
-  const [idPerfil, setIdPerfil] = useState("");
-  const [nomePerfil, setNomePerfil] = useState("");
+const AddModuleModal = ({ isVisible, onClose, title, onConfirm }) => {
+  const [codigoModulo, setCodigoModulo] = useState("");
+  const [nomeModulo, setNomeModulo] = useState("");
   const [descricao, setDescricao] = useState("");
-  const [selectedModules, setSelectedModules] = useState([]);
+  const [selectedFunctions, setSelectedFunctions] = useState([]);
+  const [selectedTransactions, setSelectedTransactions] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (profileData) {
-      setIdPerfil(profileData.id_perfil);
-      setNomePerfil(profileData.nome_perfil);
-      setDescricao(profileData.descricao);
-    }
-  }, [profileData]);
-
   const handleConfirm = () => {
-    if (!nomePerfil || !descricao) {
-      setErrorMessage("Please fill in all text fields.");
+    if (!codigoModulo || !nomeModulo) {
+      setErrorMessage("Todos os campos de texto devem ser preenchidos");
       return;
     }
 
-    const updatedProfile = {
-      id_perfil: idPerfil,
-      nome_perfil: nomePerfil,
+    const newModule = {
+      codigo_modulo: codigoModulo,
+      nome_modulo: nomeModulo,
       descricao,
-      moduloIds: selectedModules,
+      funcaoIds: selectedFunctions,
+      transacaoIds: selectedTransactions,
     };
-    onConfirm(updatedProfile);
-    setSelectedModules([]);
+    console.log(newModule);
+    onConfirm(newModule);
+    onClose();
+  };
+
+  const handleClose = () => {
+    setErrorMessage("");
     onClose();
   };
 
@@ -114,26 +106,49 @@ const EditProfileModal = ({
       <ModalForm>
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ModalInput
+          id="codigo modulo"
           type="text"
-          value={nomePerfil}
-          placeholder="Nome do Perfil"
-          onChange={(e) => setNomePerfil(e.target.value)}
+          value={codigoModulo}
+          placeholder="Código do Módulo"
+          onChange={(e) => setCodigoModulo(e.target.value)}
           required
         />
         <ModalInput
+          id="nome modulo"
+          type="text"
+          value={nomeModulo}
+          placeholder="Nome do Módulo"
+          onChange={(e) => setNomeModulo(e.target.value)}
+          required
+        />
+        <ModalInput
+          id="descricao modulo"
           type="text"
           value={descricao}
           placeholder="Descrição"
           onChange={(e) => setDescricao(e.target.value)}
           required
         />
-        <CustomMultiSelect
-          fetchUrl={fetchUrl}
-          placeholder="Módulos"
-          onChange={setSelectedModules}
-        />
+        <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+          <CustomMultiSelectModule
+            labelKey="codigo_funcao"
+            valueKey="id_funcao"
+            fetchUrl="http://localhost:5050/api/funcoes"
+            placeholder="Funções"
+            onChange={setSelectedFunctions}
+            defaultValue={selectedFunctions}
+          />
+          <CustomMultiSelectModule
+            labelKey="codigo_transacao"
+            valueKey="id_transacao"
+            fetchUrl="http://localhost:5050/api/transacoes"
+            placeholder="Transações"
+            onChange={setSelectedTransactions}
+            defaultValue={selectedTransactions}
+          />
+        </div>
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
+          <ActionButton type="button" onClick={handleClose}>
             Voltar
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
@@ -145,13 +160,13 @@ const EditProfileModal = ({
   );
 };
 
-EditProfileModal.propTypes = {
+AddModuleModal.propTypes = {
   isVisible: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  profileData: PropTypes.object,
   onConfirm: PropTypes.func.isRequired,
-  fetchUrl: PropTypes.string.isRequired,
+  fetchFunctionsUrl: PropTypes.string.isRequired,
+  fetchTransactionsUrl: PropTypes.string.isRequired,
 };
 
-export default EditProfileModal;
+export default AddModuleModal;

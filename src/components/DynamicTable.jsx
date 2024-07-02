@@ -16,6 +16,7 @@ function DynamicTable({ columns, data, maxRows, onRowClick }) {
   const handleRowClick = (rowIndex, row) => {
     setSelectedRowIndex(rowIndex);
     onRowClick(row);
+    console.log(row);
   };
 
   const handleClickOutside = (event) => {

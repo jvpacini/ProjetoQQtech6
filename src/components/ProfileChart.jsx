@@ -7,7 +7,7 @@ const ProfileChart = () => {
   const [chartData, setChartData] = useState({});
 
   useEffect(() => {
-    axios.get('http://localhost:8000/users')
+    axios.get('http://localhost:5050/api/users')
       .then(response => {
         const users = response.data;
         const profileTypes = {};

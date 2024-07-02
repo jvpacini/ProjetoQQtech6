@@ -3,16 +3,17 @@ import PropTypes from "prop-types";
 import DynamicTable from "../components/DynamicTable";
 import Pagination from "../components/Pagination";
 import ActionButtons from "../components/ActionButtons";
-import AddModuleModal from "../components/SimpleAddModal";
-import SimpleEditModal from "../components/SimpleEditModal";
-import DeleteModal from "../components/DeleteUserModal";
+import AddModuleModal from "../components/AddModuleModal";
+import EditModuleModal from "../components/EditModuleModal";
+import DeleteModal from "../components/DeleteModal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
+import api from "../services/api";
+import Cookies from "js-cookie";
 
 const ModuleDashboard = ({ searchTerm, onSearch }) => {
   const [modules, setModules] = useState([]);
-  const [profiles, setProfiles] = useState([]);
   const [filteredModules, setFilteredModules] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -20,25 +21,33 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const rowsPerPage = 8;
+  const rowsPerPage = 7;
+
+  const fetchData = async () => {
+    try {
+      const token = Cookies.get("accessToken");
+      if (!token) {
+        throw new Error("No token found. Please log in.");
+      }
+      const response = await api.get("/modulos-details");
+      const modulesData = response.data;
+
+      // Preprocess the data
+      const processedData = modulesData.map((module) => ({
+        ...module,
+        funcaoCodes: module.funcoes.length ? module.funcoes.map(f => f.codigo_funcao).join(", ") : "N/A",
+        transacaoCodes: module.transacoes.length ? module.transacoes.map(t => t.codigo_transacao).join(", ") : "N/A"
+      }));
+
+      setModules(processedData);
+      setFilteredModules(processedData);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  };
 
   useEffect(() => {
-    // Fetch modules data
-    fetch("http://localhost:8000/modulos")
-      .then((response) => response.json())
-      .then((data) => {
-        setModules(data);
-        setFilteredModules(data);
-      })
-      .catch((error) => console.error("Erro ao carregar módulos:", error));
-
-    // Fetch profiles data
-    fetch("http://localhost:8000/perfis")
-      .then((response) => response.json())
-      .then((data) => {
-        setProfiles(data);
-      })
-      .catch((error) => console.error("Erro ao carregar perfis:", error));
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -46,7 +55,7 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
 
     if (searchTerm) {
       filtered = filtered.filter((module) =>
-        module.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        module.nome_modulo.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -60,82 +69,82 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
     setIsAddModalVisible(true);
   };
 
+  const handleRemoveModuleClick = () => {
+    if (selectedRow) {
+      setIsDeleteModalVisible(true);
+    } else {
+      alert("Please select a module to remove.");
+    }
+  };
+
   const handleEditModuleClick = () => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Por favor, selecione um módulo para editar.");
+      alert("Please select a module to edit.");
     }
+  };
+
+  const handleModalClose = () => {
+    setIsAddModalVisible(false);
+    setIsEditModalVisible(false);
+    setSelectedRow(null);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
-  const handleDeleteModuleClick = () => {
-    if (selectedRow) {
-      setIsDeleteModalVisible(true);
-    } else {
-      alert("Por favor, selecione um módulo para deletar.");
+  const handleAddConfirm = async (newModule) => {
+    try {
+      await api.post("/modulos", newModule);
+      fetchData();
+    } catch (error) {
+      console.error("Error adding module:", error);
     }
-  };
-
-  const handleAddModalClose = () => {
-    setIsAddModalVisible(false);
-    setSelectedRow(null);
-  };
-
-  const handleEditModalClose = () => {
-    setIsEditModalVisible(false);
-    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
-  };
-
-  const handleDeleteModalClose = () => {
-    setIsDeleteModalVisible(false);
-    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
-  };
-
-  const handleAddConfirm = (newModule) => {
-    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
-    console.log("Novo módulo:", newModule);
     setIsAddModalVisible(false);
   };
 
-  const handleEditConfirm = (updatedModule) => {
-    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
-    console.log("Módulo atualizado:", updatedModule);
+  const handleEditConfirm = async (updatedModule) => {
+    try {
+      await api.put(`/modulos/${updatedModule.id_modulo}`, updatedModule);
+      fetchData();
+    } catch (error) {
+      console.error("Error updating module:", error);
+    }
     setIsEditModalVisible(false);
   };
 
-  const handleDeleteConfirm = () => {
-    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
-    console.log("Módulo a ser deletado:", selectedRow);
+  const handleDeleteConfirm = async () => {
+    if (selectedRow) {
+      try {
+        await api.delete(`${selectedRow.id_modulo}/associations`);
+        fetchData();
+      } catch (error) {
+        console.error("Error deleting module:", error);
+      }
+    }
     setIsDeleteModalVisible(false);
   };
 
   const moduleButtons = [
-    { text: "Adicionar módulo", onClick: handleAddModuleClick },
-    { text: "Remover módulo", onClick: handleDeleteModuleClick },
-    { text: "Editar módulo", onClick: handleEditModuleClick },
+    { text: "Adicionar Módulo", onClick: handleAddModuleClick },
+    { text: "Remover Módulo", onClick: handleRemoveModuleClick },
+    { text: "Editar Módulo", onClick: handleEditModuleClick },
   ];
 
   const moduleColumns = [
-    { header: "Código", field: "codigo" },
-    { header: "Nome", field: "nome" },
-    { header: "Perfis", field: "perfis" },
+    { header: "Código", field: "codigo_modulo" },
+    { header: "Nome do módulo", field: "nome_modulo" },
+    { header: "Funções", field: "funcaoCodes" },
+    { header: "Transações", field: "transacaoCodes" },
+    { header: "Descrição", field: "descricao" },
   ];
-
-  const getProfilesForModule = (moduleCode) => {
-    return profiles
-      .filter((profile) => profile.modulos.includes(moduleCode))
-      .map((profile) => profile.nome)
-      .join(", ");
-  };
-
-  const dataWithProfiles = filteredModules.map((module) => ({
-    ...module,
-    perfis: getProfilesForModule(module.codigo),
-  }));
 
   return (
     <div className="content">
@@ -144,7 +153,7 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={moduleColumns}
-        data={dataWithProfiles}
+        data={filteredModules}
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
@@ -158,34 +167,38 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
         isVisible={
           isAddModalVisible || isEditModalVisible || isDeleteModalVisible
         }
-        onClose={handleAddModalClose}
+        onClose={handleModalClose}
       />
       <AddModuleModal
         isVisible={isAddModalVisible}
-        onClose={handleAddModalClose}
-        title="Adicionar Módulo"
+        onClose={handleModalClose}
+        title="Add Module"
         onConfirm={handleAddConfirm}
+        fetchFunctionsUrl="http://localhost:5050/api/funcoes"
+        fetchTransactionsUrl="http://localhost:5050/api/transacoes"
       />
-      <SimpleEditModal
+      <EditModuleModal
         isVisible={isEditModalVisible}
-        onClose={handleEditModalClose}
-        title="Editar Módulo"
-        item={selectedRow}
+        onClose={handleModalClose}
+        title="Edit Module"
         onConfirm={handleEditConfirm}
-        fields={[
-          { label: "Código", name: "codigo", type: "text", required: true },
-          { label: "Nome", name: "nome", type: "text", required: true },
-        ]}
+        moduleData={selectedRow}
+        fetchFuncUrl="http://localhost:5050/api/funcoes"
+        fetchTransUrl="http://localhost:5050/api/transacoes"
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Deletar Módulo"
-        fields={[
-          { label: "Nome", value: selectedRow ? selectedRow.nome : "" },
-          { label: "Código", value: selectedRow ? selectedRow.codigo : "" },
-        ]}
+        title="Delete Module"
         onConfirm={handleDeleteConfirm}
+        fields={
+          selectedRow
+            ? [
+                { label: "Module Name", value: selectedRow.nome_modulo },
+                { label: "Description", value: selectedRow.descricao },
+              ]
+            : []
+        }
       />
     </div>
   );

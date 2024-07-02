@@ -77,20 +77,25 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleConfirm = async () => {
-    // Email and password validations
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!name || !email || !password || !codigoUsuario) {
+      setErrorMessage("Todos os campos de texto devem ser preenchidos");
+      return;
+    }
+
     if (!emailRegex.test(email)) {
-      setErrorMessage("Invalid email address");
+      setErrorMessage("Endereço de email inválido");
       return;
     }
 
     if (password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters long");
+      setErrorMessage("A senha deve ter pelo menos 6 letras");
       return;
     }
 
     if (!Number.isInteger(Number(codigoUsuario))) {
-      setErrorMessage("Codigo Usuario must be an integer");
+      setErrorMessage("Código de usuário deve ser um inteiro");
       return;
     }
 
@@ -109,8 +114,13 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
       onConfirm();
       onClose();
     } catch (error) {
-      setErrorMessage("Error adding user: " + error.message);
+      setErrorMessage("Erro ao adicionar usuário: " + error.message);
     }
+  };
+
+  const handleClose = () => {
+    setErrorMessage("");
+    onClose();
   };
 
   if (!isVisible) return null;
@@ -122,14 +132,14 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ModalInput
           type="text"
-          placeholder="Codigo Usuario"
+          placeholder="Código Usuario"
           value={codigoUsuario}
           onChange={(e) => setCodigoUsuario(e.target.value)}
           required
         />
         <ModalInput
           type="text"
-          placeholder="Full Name"
+          placeholder="Nome completo"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -143,7 +153,7 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
         />
         <ModalInput
           type="password"
-          placeholder="Password"
+          placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -154,11 +164,11 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
           onChange={setProfile}
         />
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
-            Back
+          <ActionButton type="button" onClick={handleClose}>
+            Voltar
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
-            Confirm
+            Confirmar
           </ActionButton>
         </FormActions>
       </ModalForm>

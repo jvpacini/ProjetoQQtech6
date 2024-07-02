@@ -9,36 +9,36 @@ import DeleteModal from "../components/DeleteModal";
 import Cover from "../components/Cover";
 import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
+import api from "../services/api";
+import Cookies from "js-cookie";
 
 const TransactionDashboard = ({ searchTerm, onSearch }) => {
   const [transactions, setTransactions] = useState([]);
-  const [modules, setModules] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
-  const [paginatedTransactions, setPaginatedTransactions] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const rowsPerPage = 8;
+  const rowsPerPage = 7;
+
+  const fetchData = async () => {
+    try {
+      const token = Cookies.get("accessToken");
+      if (!token) {
+        throw new Error("No token found. Please log in.");
+      }
+      const transactionsResponse = await api.get("/transacoes");
+      setTransactions(transactionsResponse.data);
+      setFilteredTransactions(transactionsResponse.data);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  };
 
   useEffect(() => {
-    fetch("http://localhost:8000/transacoes")
-      .then((response) => response.json())
-      .then((data) => {
-        setTransactions(data);
-        setFilteredTransactions(data); // Inicialmente, todas as transações são exibidas
-      })
-      .catch((error) => console.error("Erro ao carregar transações:", error));
-
-    // Fetch modules data
-    fetch("http://localhost:8000/modulos")
-      .then((response) => response.json())
-      .then((data) => {
-        setModules(data);
-      })
-      .catch((error) => console.error("Erro ao carregar módulos:", error));
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -46,103 +46,124 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
 
     if (searchTerm) {
       filtered = filtered.filter((transaction) =>
-        transaction.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        transaction.nome_transacao
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       );
     }
 
-    setFilteredTransactions(filtered);
+    setFilteredTransactions(
+      filtered.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+    );
     setTotalPages(Math.ceil(filtered.length / rowsPerPage));
-    setCurrentPage(1); // Reset to first page on search/filter change
-  }, [transactions, searchTerm]);
-
-  useEffect(() => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const paginated = filteredTransactions.slice(startIndex, startIndex + rowsPerPage);
-    setPaginatedTransactions(paginated);
-  }, [filteredTransactions, currentPage]);
+  }, [transactions, searchTerm, currentPage]);
 
   const handleAddTransactionClick = () => {
     setIsAddModalVisible(true);
+  };
+
+  const handleRemoveTransactionClick = () => {
+    if (selectedRow) {
+      setIsDeleteModalVisible(true);
+    } else {
+      alert("Please select a transaction to remove.");
+    }
   };
 
   const handleEditTransactionClick = () => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Por favor, selecione uma transação para editar.");
+      alert("Please select a transaction to edit.");
     }
   };
 
-  const handleDeleteTransactionClick = () => {
-    if (selectedRow) {
-      setIsDeleteModalVisible(true);
-    } else {
-      alert("Por favor, selecione uma transação para deletar.");
-    }
-  };
-
-  const handleAddModalClose = () => {
+  const handleModalClose = () => {
     setIsAddModalVisible(false);
-    setSelectedRow(null);
-  };
-
-  const handleEditModalClose = () => {
     setIsEditModalVisible(false);
-    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
+    setSelectedRow(null);
   };
 
   const handleDeleteModalClose = () => {
     setIsDeleteModalVisible(false);
-    setSelectedRow(null); // Deseleciona a linha ao fechar o modal
-  };
-
-  const handleAddConfirm = (newTransaction) => {
-    // TODO: Adicione a lógica de confirmação aqui, por exemplo, enviar os dados para o servidor
-    console.log("Nova transação:", newTransaction);
-    setIsAddModalVisible(false);
-  };
-
-  const handleEditConfirm = (updatedTransaction) => {
-    // TODO: Adicione a lógica de atualização aqui, por exemplo, enviar os dados atualizados para o servidor
-    console.log("Transação atualizada:", updatedTransaction);
-    setIsEditModalVisible(false);
-  };
-
-  const handleDeleteConfirm = () => {
-    // TODO: Adicione a lógica de exclusão aqui, por exemplo, enviar a solicitação para o servidor
-    console.log("Transação a ser deletada:", selectedRow);
-    setIsDeleteModalVisible(false);
+    setSelectedRow(null);
   };
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
+  const handleAddConfirm = async (newTransaction) => {
+    try {
+      const response = await api.post("/transacoes", newTransaction);
+      setTransactions([...transactions, response.data]);
+      fetchData();
+    } catch (error) {
+      console.error("Error adding transaction:", error);
+    }
+    setIsAddModalVisible(false);
+  };
+
+  const handleEditConfirm = async (updatedTransaction) => {
+    try {
+      await api.put(
+        `/transacoes/${selectedRow.id_transacao}`,
+        updatedTransaction
+      );
+      setTransactions(
+        transactions.map((transaction) =>
+          transaction.id_transacao === updatedTransaction.id_transacao
+            ? updatedTransaction
+            : transaction
+        )
+      );
+      fetchData();
+      setSelectedRow(null);
+    } catch (error) {
+      console.error("Error updating transaction:", error);
+    }
+    setIsEditModalVisible(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (selectedRow) {
+      try {
+        await api.delete(`/transacoes/${selectedRow.id_transacao}`);
+        setTransactions(
+          transactions.filter(
+            (transaction) =>
+              transaction.id_transacao !== selectedRow.id_transacao
+          )
+        );
+        fetchData();
+        setSelectedRow(null);
+      } catch (error) {
+        console.error("Error deleting transaction:", error);
+      }
+    }
+    setIsDeleteModalVisible(false);
+  };
+
   const transactionButtons = [
-    { text: "Adicionar transação", onClick: handleAddTransactionClick },
-    { text: "Remover transação", onClick: handleDeleteTransactionClick },
-    { text: "Editar transação", onClick: handleEditTransactionClick },
+    { text: "Add Transaction", onClick: handleAddTransactionClick },
+    { text: "Remove Transaction", onClick: handleRemoveTransactionClick },
+    { text: "Edit Transaction", onClick: handleEditTransactionClick },
   ];
 
   const transactionColumns = [
-    { header: "Código", field: "codigo" },
-    { header: "Nome", field: "nome" },
-    { header: "Módulos", field: "modulos" }
+    { header: "Código", field: "codigo_transacao" },
+    { header: "Nome", field: "nome_transacao" },
+    { header: "Descrição", field: "descricao" },
   ];
-
-  const dataWithModules = paginatedTransactions.map(transaction => ({
-    ...transaction,
-    modulos: transaction.modulos.map(mod => modules.find(m => m.codigo === mod)?.codigo || mod).join(', ')
-  }));
 
   return (
     <div className="content">
       <SideBar />
-      <h1>Transações</h1>
+      <h1>Transactions</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
         columns={transactionColumns}
-        data={dataWithModules}
+        data={filteredTransactions}
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
       />
@@ -156,38 +177,51 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         isVisible={
           isAddModalVisible || isEditModalVisible || isDeleteModalVisible
         }
-        onClose={handleAddModalClose}
+        onClose={handleModalClose}
       />
       <SimpleAddModal
         isVisible={isAddModalVisible}
-        onClose={handleAddModalClose}
-        title="Adicionar Transação"
+        onClose={handleModalClose}
+        title="Add Transaction"
         onConfirm={handleAddConfirm}
         fields={[
-          { label: "Código", name: "codigo", type: "text", required: true },
-          { label: "Nome", name: "nome", type: "text", required: true },
+          { label: "Code", name: "codigo_transacao", type: "text" },
+          { label: "Name", name: "nome_transacao", type: "text" },
+          { label: "Description", name: "descricao", type: "text" },
         ]}
       />
       <SimpleEditModal
         isVisible={isEditModalVisible}
-        onClose={handleEditModalClose}
-        title="Editar Transação"
-        item={selectedRow}
+        onClose={handleModalClose}
+        title="Edit Transaction"
         onConfirm={handleEditConfirm}
         fields={[
-          { label: "Código", name: "codigo", type: "text", required: true },
-          { label: "Nome", name: "nome", type: "text", required: true },
+          { label: "Code", name: "codigo_transacao", type: "text" },
+          { label: "Name", name: "nome_transacao", type: "text" },
+          { label: "Description", name: "descricao", type: "text" },
         ]}
+        transactionData={selectedRow}
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Deletar Transação"
-        fields={[
-          { label: "Código", value: selectedRow ? selectedRow.codigo : "" },
-          { label: "Nome", value: selectedRow ? selectedRow.nome : "" },
-        ]}
+        title="Delete Transaction"
         onConfirm={handleDeleteConfirm}
+        fields={
+          selectedRow
+            ? [
+                {
+                  label: "Transaction Code",
+                  value: selectedRow.codigo_transacao,
+                },
+                {
+                  label: "Transaction Name",
+                  value: selectedRow.nome_transacao,
+                },
+                { label: "Description", value: selectedRow.descricao },
+              ]
+            : []
+        }
       />
     </div>
   );
