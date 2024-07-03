@@ -94,6 +94,9 @@ const AddModuleModal = ({ isVisible, onClose, title, onConfirm }) => {
   };
 
   const handleClose = () => {
+    setCodigoModulo("");
+    setDescricao("");
+    setNomeModulo("");
     setErrorMessage("");
     onClose();
   };

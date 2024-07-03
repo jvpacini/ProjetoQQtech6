@@ -85,12 +85,12 @@ const EditProfileModal = ({
     if (profileData) {
       setIdPerfil(profileData.id_perfil);
       setNomePerfil(profileData.nome_perfil);
-      setDescricao(profileData.descricao);
+      setDescricao(profileData.descricao !== 'N/A' ? profileData.descricao : "");
     }
   }, [profileData]);
 
   const handleConfirm = () => {
-    if (!nomePerfil || !descricao) {
+    if (!nomePerfil) {
       setErrorMessage("Todos os campos de texto devem ser preenchidos");
       return;
     }

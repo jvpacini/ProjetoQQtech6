@@ -83,15 +83,12 @@ const SimpleAddModal = ({
   };
 
   const handleConfirm = () => {
-    let hasEmptyFields = false;
-    fields.forEach((field) => {
-      if (!formData[field.name] || formData[field.name].trim() === '') {
-        hasEmptyFields = true;
-      }
+    let hasEmptyFields = fields.some(field => {
+      return (!formData[field.name] || formData[field.name].trim() === '') && field.name !== 'descricao';
     });
 
     if (hasEmptyFields) {
-      setErrorMessage('Por favor preencha todos os campos');
+      setErrorMessage('Por favor preencha os campos código e nome');
     } else {
       onConfirm(formData);
       onClose();

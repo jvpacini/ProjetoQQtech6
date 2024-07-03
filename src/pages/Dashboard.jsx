@@ -4,9 +4,11 @@ import DashboardBox from "../components/DashboardBox";
 import userIcon from "../assets/user_icon_template.png";
 import transactionIcon from "../assets/transaction_icon.png";
 import functionIcon from "../assets/gear_icon.png";
+import profileIcon from   "../assets/profile_icon.png"
+import moduleIcon from "../assets/module_icon.png";
 import ProfileDistributionChart from "../components/ProfileChart";
 import api from "../services/api";
-import { getReports } from '../services/apiPython';
+import { getReports } from "../services/apiPython";
 
 const Dashboard = () => {
   const [profileCount, setProfileCount] = useState(0);
@@ -45,16 +47,16 @@ const Dashboard = () => {
   const handleGenerateCSV = async () => {
     try {
       const response = await getReports();
-      const blob = new Blob([response.data], { type: 'text/csv' });
+      const blob = new Blob([response.data], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', 'report.csv');
+      link.setAttribute("download", "report.csv");
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Error generating CSV:', error);
+      console.error("Error generating CSV:", error);
     }
   };
 
@@ -72,10 +74,17 @@ const Dashboard = () => {
             }`}
           />
           <DashboardBox
-            icon={userIcon}
+            icon={profileIcon}
             title="Perfis"
             subtitle={`Total de perfis: ${
               profileCount !== 0 ? profileCount : "Carregando..."
+            }`}
+          />
+          <DashboardBox
+            icon={moduleIcon}
+            title="Módulos"
+            subtitle={`Total de módulos: ${
+              moduleCount !== 0 ? moduleCount : "Carregando..."
             }`}
           />
           <DashboardBox
@@ -92,16 +101,18 @@ const Dashboard = () => {
               transactionCount !== 0 ? transactionCount : "Carregando..."
             }`}
           />
-          <DashboardBox
-            icon={functionIcon}
-            title="Módulos"
-            subtitle={`Total de módulos: ${
-              moduleCount !== 0 ? moduleCount : "Carregando..."
-            }`}
-          />
           <div>
-      <button onClick={handleGenerateCSV}>Gerar relatório CSV</button>
-    </div>
+            <button
+              style={{
+                padding: "10px",
+                borderRadius: "10px",
+                backgroundColor: "#d9d9d9",
+              }}
+              onClick={handleGenerateCSV}
+            >
+              Gerar relatório CSV
+            </button>
+          </div>
         </div>
         <div className="dashboard-chart">
           <ProfileDistributionChart />

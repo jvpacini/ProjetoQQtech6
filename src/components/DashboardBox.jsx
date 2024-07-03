@@ -14,7 +14,7 @@ const BoxContainer = styled.div`
 const BoxContent = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 10px; /* Ajuste a margem conforme necessário */
+  margin-left: 10px;
 `;
 
 const BoxTitle = styled.h2`
@@ -32,7 +32,7 @@ const BoxSubtitle = styled.p`
 const Icon = styled.img`
   width: 60px;
   height: 60px;
-  margin-right: 10px; /* Ajuste a margem conforme necessário */
+  margin-right: 10px;
 `;
 
 const DashboardBox = ({ icon, title, subtitle }) => {

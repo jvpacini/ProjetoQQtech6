@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import ForgotPassword from "./pages/ForgotPassword";
 import ChangePassword from "./pages/ChangePassword"; 
 import PrivateRoute from "./components/PrivateRoute";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -99,6 +100,7 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </Router>

@@ -80,8 +80,8 @@ const AddProfileModal = ({
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleConfirm = () => {
-    if (!nomePerfil || !descricao) {
-      setErrorMessage("Todos os campos de texto devem ser preenchidos");
+    if (!nomePerfil) {
+      setErrorMessage("Por favor insira o nome do perfil");
       return;
     }
 
@@ -98,6 +98,8 @@ const AddProfileModal = ({
 
   const handleClose = () => {
     setErrorMessage("");
+    setDescricao("");
+    setNomePerfil("");
     onClose();
   };
 

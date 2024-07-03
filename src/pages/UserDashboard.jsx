@@ -197,7 +197,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       <DeleteUserModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Deletar usuário"
+        title="Remover usuário"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow

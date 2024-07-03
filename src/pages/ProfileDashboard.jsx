@@ -48,7 +48,8 @@ const ProfileDashboard = ({ searchTerm, onSearch }) => {
             return module ? module.codigo_modulo : null;
           })
           .filter(Boolean)
-          .join(", ") || "N/A"
+          .join(", ") || "N/A",
+        descricao: profile.descricao || "N/A"
       }));
 
       setProfiles(profilesWithModules);

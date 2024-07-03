@@ -172,7 +172,7 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       <AddModuleModal
         isVisible={isAddModalVisible}
         onClose={handleModalClose}
-        title="Add Module"
+        title="Adicionar módulo"
         onConfirm={handleAddConfirm}
         fetchFunctionsUrl="http://localhost:5050/api/funcoes"
         fetchTransactionsUrl="http://localhost:5050/api/transacoes"
@@ -180,7 +180,7 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       <EditModuleModal
         isVisible={isEditModalVisible}
         onClose={handleModalClose}
-        title="Edit Module"
+        title="Editar módulo"
         onConfirm={handleEditConfirm}
         moduleData={selectedRow}
         fetchFuncUrl="http://localhost:5050/api/funcoes"
@@ -189,13 +189,13 @@ const ModuleDashboard = ({ searchTerm, onSearch }) => {
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Delete Module"
+        title="Remover Módulo"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow
             ? [
-                { label: "Module Name", value: selectedRow.nome_modulo },
-                { label: "Description", value: selectedRow.descricao },
+                { label: "Nome", value: selectedRow.nome_modulo },
+                { label: "Descrição", value: selectedRow.descricao },
               ]
             : []
         }

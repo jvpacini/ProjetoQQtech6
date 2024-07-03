@@ -26,29 +26,29 @@ const ModalTitle = styled.h2`
   margin-bottom: 20px;
 `;
 
-const ModalForm = styled.form`
+const ModalForm = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
 const ModalField = styled.div`
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 15px;
 `;
 
-const FieldLabel = styled.label`
+const FieldLabel = styled.span`
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-right: 10px;
 `;
 
 const FieldValue = styled.span`
-  display: block;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #fff;
+  flex-grow: 1;
+  text-align: right;
 `;
 
 const FormActions = styled.div`
+  margin-top: 15px;
   display: flex;
   justify-content: space-between;
 `;

@@ -34,6 +34,11 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       const sortedTransactions = response.data.sort(
         (a, b) => a.id_transacao - b.id_transacao
       );
+      sortedTransactions.forEach((transaction) => {
+        if (!transaction.descricao) {
+          transaction.descricao = "N/A";
+        }
+      });
       setTransactions(sortedTransactions);
       setFilteredTransactions(sortedTransactions);
     } catch (error) {
@@ -200,7 +205,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Deletar Transação"
+        title="Remover Transação"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow

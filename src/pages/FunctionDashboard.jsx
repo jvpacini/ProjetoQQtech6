@@ -34,6 +34,11 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       const sortedFunctions = response.data.sort(
         (a, b) => a.id_funcao - b.id_funcao
       );
+      sortedFunctions.forEach((funcao) => {
+        if (!funcao.descricao) {
+          funcao.descricao = "N/A";
+        }
+      });
       setFunctions(sortedFunctions);
       setFilteredFunctions(sortedFunctions);
     } catch (error) {
@@ -200,7 +205,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       <DeleteModal
         isVisible={isDeleteModalVisible}
         onClose={handleDeleteModalClose}
-        title="Deletar função"
+        title="Remover função"
         onConfirm={handleDeleteConfirm}
         fields={
           selectedRow

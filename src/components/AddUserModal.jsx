@@ -99,10 +99,8 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
       return;
     }
 
-    // Clear any previous error message
     setErrorMessage("");
 
-    // Call the API to add the user
     try {
       await api.post("/usuarios", {
         nome_completo: name,
@@ -120,6 +118,10 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
 
   const handleClose = () => {
     setErrorMessage("");
+    setCodigoUsuario("");
+    setName("");
+    setEmail("");
+    setPassword("");
     onClose();
   };
 
