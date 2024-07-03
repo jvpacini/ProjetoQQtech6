@@ -30,8 +30,8 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       if (!token) {
         throw new Error("No token found. Please log in.");
       }
-      const transactionsResponse = await api.get("/transacoes");
-      const sortedTransactions = transactionsResponse.data.sort(
+      const response = await api.get("/transacoes");
+      const sortedTransactions = response.data.sort(
         (a, b) => a.id_transacao - b.id_transacao
       );
       setTransactions(sortedTransactions);
@@ -40,7 +40,6 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       console.error("Error loading data:", error);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -49,10 +48,8 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
     let filtered = transactions;
 
     if (searchTerm) {
-      filtered = filtered.filter((transaction) =>
-        transaction.nome_transacao
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+      filtered = filtered.filter((transacao) =>
+        transacao.nome_transacao.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -70,7 +67,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsDeleteModalVisible(true);
     } else {
-      alert("Please select a transaction to remove.");
+      alert("Por favor selecione uma função para remoção");
     }
   };
 
@@ -78,7 +75,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Por favor selecione uma transação para edição");
+      alert("Por favor selecione uma função para edição");
     }
   };
 
@@ -102,24 +99,26 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       const response = await api.post("/transacoes", newTransaction);
       setTransactions([...transactions, response.data]);
     } catch (error) {
-      console.error("Error adding transaction:", error);
+      console.error("Error adding Transaction:", error);
     }
     setIsAddModalVisible(false);
+    fetchData();
   };
 
   const handleEditConfirm = async (updatedTransaction) => {
     try {
       await api.put(`/transacoes/${selectedRow.id_transacao}`, updatedTransaction);
       setTransactions(
-        transactions.map((transaction) => 
-          transaction.id_funcao === selectedRow.id_transacao ? updatedTransaction : transaction
+        transactions.map((transacao) =>
+          transacao.id_transacao === selectedRow.id_transacao ? updatedTransaction : transacao
         )
       );
       setSelectedRow(null);
     } catch (error) {
-      console.error("Error updating transaction:", error);
+      console.error("Error updating Transaction:", error);
     }
     setIsEditModalVisible(false);
+    fetchData();
   };
 
   const handleDeleteConfirm = async () => {
@@ -128,25 +127,25 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         await api.delete(`/transacoes/${selectedRow.id_transacao}`);
         setTransactions(
           transactions.filter(
-            (transaction) =>
-              transaction.id_transacao !== selectedRow.id_transacao
+            (transacao) => transacao.id_transacao !== selectedRow.id_transacao
           )
         );
         setSelectedRow(null);
       } catch (error) {
-        console.error("Error deleting transaction:", error);
+        console.error("Error deleting Transaction:", error);
       }
     }
     setIsDeleteModalVisible(false);
+    fetchData();
   };
 
-  const transactionButtons = [
+  const TransactionButtons = [
     { text: "Adicionar Transação", onClick: handleAddTransactionClick },
     { text: "Remover Transação", onClick: handleRemoveTransactionClick },
     { text: "Editar Transação", onClick: handleEditTransactionClick },
   ];
 
-  const transactionColumns = [
+  const TransactionColumns = [
     { header: "Código", field: "codigo_transacao" },
     { header: "Nome", field: "nome_transacao" },
     { header: "Descrição", field: "descricao" },
@@ -158,7 +157,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
       <h1>Transações</h1>
       <SearchBar data={[]} onSearch={onSearch} />
       <DynamicTable
-        columns={transactionColumns}
+        columns={TransactionColumns}
         data={filteredTransactions}
         maxRows={10}
         onRowClick={(row) => setSelectedRow(row)}
@@ -168,7 +167,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-      <ActionButtons buttons={transactionButtons} />
+      <ActionButtons buttons={TransactionButtons} />
       <Cover
         isVisible={
           isAddModalVisible || isEditModalVisible || isDeleteModalVisible
@@ -196,7 +195,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
           { label: "Nome", name: "nome_transacao", type: "text" },
           { label: "Descrição", name: "descricao", type: "text" },
         ]}
-        transactionData={selectedRow}
+        rowData={selectedRow}
       />
       <DeleteModal
         isVisible={isDeleteModalVisible}
@@ -206,14 +205,8 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         fields={
           selectedRow
             ? [
-                {
-                  label: "Código transação",
-                  value: selectedRow.codigo_transacao,
-                },
-                {
-                  label: "Nome transação",
-                  value: selectedRow.nome_transacao,
-                },
+                { label: "Código", value: selectedRow.codigo_transacao },
+                { label: "Nome", value: selectedRow.nome_transacao },
                 { label: "Descrição", value: selectedRow.descricao },
               ]
             : []
