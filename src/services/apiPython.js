@@ -6,6 +6,10 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
+export const getReports = () => {
+  return api.get('/generate-csv', { responseType: 'blob' });
+};
+
 export const sendRecoveryEmail = (email) => {
   return api.post('/send-recovery-email', { email });
 };

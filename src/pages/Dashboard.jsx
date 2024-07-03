@@ -5,7 +5,8 @@ import userIcon from "../assets/user_icon_template.png";
 import transactionIcon from "../assets/transaction_icon.png";
 import functionIcon from "../assets/gear_icon.png";
 import ProfileDistributionChart from "../components/ProfileChart";
-import api from "../services/api"; // Import the axiosInstance
+import api from "../services/api";
+import { getReports } from '../services/apiPython';
 
 const Dashboard = () => {
   const [profileCount, setProfileCount] = useState(0);
@@ -40,6 +41,22 @@ const Dashboard = () => {
       .then((response) => setFunctionCount(response.data.length))
       .catch((error) => console.error("Erro ao carregar funções:", error));
   }, []);
+
+  const handleGenerateCSV = async () => {
+    try {
+      const response = await getReports();
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error generating CSV:', error);
+    }
+  };
 
   return (
     <div className="content">
@@ -82,6 +99,9 @@ const Dashboard = () => {
               moduleCount !== 0 ? moduleCount : "Carregando..."
             }`}
           />
+          <div>
+      <button onClick={handleGenerateCSV}>Gerar relatório CSV</button>
+    </div>
         </div>
         <div className="dashboard-chart">
           <ProfileDistributionChart />
