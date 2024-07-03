@@ -11,6 +11,7 @@ import SideBar from "../components/SideBar";
 import SearchBar from "../components/SearchBar";
 import api from "../services/api";
 import Cookies from "js-cookie";
+import "./Dashboard.css";
 
 const TransactionDashboard = ({ searchTerm, onSearch }) => {
   const [transactions, setTransactions] = useState([]);
@@ -30,8 +31,11 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
         throw new Error("No token found. Please log in.");
       }
       const transactionsResponse = await api.get("/transacoes");
-      setTransactions(transactionsResponse.data);
-      setFilteredTransactions(transactionsResponse.data);
+      const sortedTransactions = transactionsResponse.data.sort(
+        (a, b) => a.id_transacao - b.id_transacao
+      );
+      setTransactions(sortedTransactions);
+      setFilteredTransactions(sortedTransactions);
     } catch (error) {
       console.error("Error loading data:", error);
     }
@@ -74,7 +78,7 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Please select a transaction to edit.");
+      alert("Por favor selecione uma transação para edição");
     }
   };
 
@@ -97,7 +101,6 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
     try {
       const response = await api.post("/transacoes", newTransaction);
       setTransactions([...transactions, response.data]);
-      fetchData();
     } catch (error) {
       console.error("Error adding transaction:", error);
     }
@@ -106,18 +109,12 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
 
   const handleEditConfirm = async (updatedTransaction) => {
     try {
-      await api.put(
-        `/transacoes/${selectedRow.id_transacao}`,
-        updatedTransaction
-      );
+      await api.put(`/transacoes/${selectedRow.id_transacao}`, updatedTransaction);
       setTransactions(
-        transactions.map((transaction) =>
-          transaction.id_transacao === updatedTransaction.id_transacao
-            ? updatedTransaction
-            : transaction
+        transactions.map((transaction) => 
+          transaction.id_funcao === selectedRow.id_transacao ? updatedTransaction : transaction
         )
       );
-      fetchData();
       setSelectedRow(null);
     } catch (error) {
       console.error("Error updating transaction:", error);
@@ -135,7 +132,6 @@ const TransactionDashboard = ({ searchTerm, onSearch }) => {
               transaction.id_transacao !== selectedRow.id_transacao
           )
         );
-        fetchData();
         setSelectedRow(null);
       } catch (error) {
         console.error("Error deleting transaction:", error);

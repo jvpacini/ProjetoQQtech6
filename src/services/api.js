@@ -26,9 +26,10 @@ export const loginUser = async (email, senha) => {
   console.log('Logging in with:', email, senha);
   return await axiosInstance.post('/login', { email, senha })
     .then(response => {
-      const { token } = response.data;
+      const { token, userId } = response.data;
       if (token) {
         Cookies.set('accessToken', token, { expires: 1 / 24 }); // Store the token as a cookie for 1 hour
+        Cookies.set('currentUserId', userId, { expires: 1 / 24 }); // Store the token as a cookie for 1 hour
       }
       return response;
     });

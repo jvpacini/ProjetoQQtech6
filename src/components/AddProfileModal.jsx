@@ -60,6 +60,13 @@ const ActionButton = styled.button`
   }
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  margin-bottom: 15px;
+`;
+
 const AddProfileModal = ({
   isVisible,
   onClose,
@@ -70,8 +77,14 @@ const AddProfileModal = ({
   const [nomePerfil, setNomePerfil] = useState("");
   const [descricao, setDescricao] = useState("");
   const [selectedModules, setSelectedModules] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleConfirm = () => {
+    if (!nomePerfil || !descricao) {
+      setErrorMessage("Todos os campos de texto devem ser preenchidos");
+      return;
+    }
+
     const newProfile = {
       nome_perfil: nomePerfil,
       descricao,
@@ -83,12 +96,18 @@ const AddProfileModal = ({
     onClose();
   };
 
+  const handleClose = () => {
+    setErrorMessage("");
+    onClose();
+  };
+
   if (!isVisible) return null;
 
   return (
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
       <ModalForm>
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ModalInput
           type="text"
           value={nomePerfil}
@@ -110,7 +129,7 @@ const AddProfileModal = ({
           defaultValue={selectedModules}
         />
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
+          <ActionButton type="button" onClick={handleClose}>
             Voltar
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>

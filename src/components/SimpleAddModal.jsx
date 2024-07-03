@@ -41,6 +41,13 @@ const ModalInput = styled.input`
   font-family: "Roboto", sans-serif;
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  margin-bottom: 15px;
+`;
+
 const FormActions = styled.div`
   margin-top: 15px;
   display: flex;
@@ -59,16 +66,40 @@ const ActionButton = styled.button`
   }
 `;
 
-const SimpleAddModal = ({ isVisible, onClose, title, onConfirm, fields }) => {
+const SimpleAddModal = ({
+  isVisible,
+  onClose,
+  title,
+  onConfirm,
+  fields,
+}) => {
   const [formData, setFormData] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrorMessage(''); 
   };
 
   const handleConfirm = () => {
-    onConfirm(formData);
+    let hasEmptyFields = false;
+    fields.forEach((field) => {
+      if (!formData[field.name] || formData[field.name].trim() === '') {
+        hasEmptyFields = true;
+      }
+    });
+
+    if (hasEmptyFields) {
+      setErrorMessage('Por favor preencha todos os campos');
+    } else {
+      onConfirm(formData);
+      onClose();
+    }
+  };
+
+  const handleClose = () => {
+    setErrorMessage("");
     onClose();
   };
 
@@ -77,6 +108,7 @@ const SimpleAddModal = ({ isVisible, onClose, title, onConfirm, fields }) => {
   return (
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <ModalForm>
         {fields.map((field, index) => (
           <ModalInput
@@ -90,7 +122,7 @@ const SimpleAddModal = ({ isVisible, onClose, title, onConfirm, fields }) => {
           />
         ))}
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
+          <ActionButton type="button" onClick={handleClose}>
             Cancel
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>

@@ -42,10 +42,11 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
       }, {});
       const usersWithProfileNames = usersResponse.data.map((user) => ({
         ...user,
-        perfilNome: profilesData[user.id_perfil] || "Sem perfil atribuído", // Map profile ID to profile name
+        perfilNome: profilesData[user.id_perfil] || "Sem perfil atribuído",
       }));
-      setUsers(usersWithProfileNames);
-      setFilteredUsers(usersWithProfileNames);
+      const sortedUsers = usersWithProfileNames.sort((a, b) => a.id_usuario - b.id_usuario);
+      setUsers(sortedUsers);
+      setFilteredUsers(sortedUsers);
       setProfiles(profilesResponse.data);
     } catch (error) {
       console.error("Erro ao carregador dados:", error);
