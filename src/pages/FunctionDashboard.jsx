@@ -24,20 +24,23 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
   const [totalPages, setTotalPages] = useState(1);
   const rowsPerPage = 7;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = Cookies.get("accessToken");
-        if (!token) {
-          throw new Error("No token found. Please log in.");
-        }
-        const response = await api.get("/funcoes");
-        setFunctions(response.data);
-        setFilteredFunctions(response.data);
-      } catch (error) {
-        console.error("Error loading data:", error);
+  const fetchData = async () => {
+    try {
+      const token = Cookies.get("accessToken");
+      if (!token) {
+        throw new Error("No token found. Please log in.");
       }
-    };
+      const response = await api.get("/funcoes");
+      const sortedFunctions = response.data.sort(
+        (a, b) => a.id_funcao - b.id_funcao
+      );
+      setFunctions(sortedFunctions);
+      setFilteredFunctions(sortedFunctions);
+    } catch (error) {
+      console.error("Error loading data:", error);
+    }
+  };
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -64,7 +67,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsDeleteModalVisible(true);
     } else {
-      alert("Please select a function to remove.");
+      alert("Por favor selecione uma função para remoção");
     }
   };
 
@@ -72,7 +75,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
     if (selectedRow) {
       setIsEditModalVisible(true);
     } else {
-      alert("Please select a function to edit.");
+      alert("Por favor selecione uma função para edição");
     }
   };
 
@@ -99,7 +102,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       console.error("Error adding function:", error);
     }
     setIsAddModalVisible(false);
-    refreshData();
+    fetchData();
   };
 
   const handleEditConfirm = async (updatedFunction) => {
@@ -115,7 +118,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       console.error("Error updating function:", error);
     }
     setIsEditModalVisible(false);
-    refreshData();
+    fetchData();
   };
 
   const handleDeleteConfirm = async () => {
@@ -123,7 +126,9 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       try {
         await api.delete(`/funcoes/${selectedRow.id_funcao}`);
         setFunctions(
-          functions.filter((funcao) => funcao.id_funcao !== selectedRow.id_funcao)
+          functions.filter(
+            (funcao) => funcao.id_funcao !== selectedRow.id_funcao
+          )
         );
         setSelectedRow(null);
       } catch (error) {
@@ -131,17 +136,7 @@ const FunctionDashboard = ({ searchTerm, onSearch }) => {
       }
     }
     setIsDeleteModalVisible(false);
-    refreshData();
-  };
-
-  const refreshData = async () => {
-    try {
-      const response = await api.get("/funcoes");
-      setFunctions(response.data);
-      setFilteredFunctions(response.data);
-    } catch (error) {
-      console.error("Error refreshing data:", error);
-    }
+    fetchData();
   };
 
   const functionButtons = [

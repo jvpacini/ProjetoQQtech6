@@ -91,7 +91,7 @@ const EditProfileModal = ({
 
   const handleConfirm = () => {
     if (!nomePerfil || !descricao) {
-      setErrorMessage("Please fill in all text fields.");
+      setErrorMessage("Todos os campos de texto devem ser preenchidos");
       return;
     }
 
@@ -103,6 +103,11 @@ const EditProfileModal = ({
     };
     onConfirm(updatedProfile);
     setSelectedModules([]);
+    onClose();
+  };
+
+  const handleClose = () => {
+    setErrorMessage("");
     onClose();
   };
 
@@ -133,7 +138,7 @@ const EditProfileModal = ({
           onChange={setSelectedModules}
         />
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
+          <ActionButton type="button" onClick={handleClose}>
             Voltar
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>

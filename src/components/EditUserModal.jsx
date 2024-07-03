@@ -70,7 +70,6 @@ const ErrorMessage = styled.p`
 const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("******");
   const [profile, setProfile] = useState(null);
   const [codigoUsuario, setCodigoUsuario] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -84,7 +83,7 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
   }, [userData]);
 
   const handleConfirm = async () => {
-    if (!email || !name || !password || !codigoUsuario) {
+    if (!email || !name || !codigoUsuario) {
       setErrorMessage("Todos os campos de texto devem ser preenchidos");
       return;
     }
@@ -95,17 +94,11 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
       return;
     }
 
-    if (password.length < 6) {
-      setErrorMessage("A senha deve ter pelo menos 6 letras");
-      return;
-    }
-
     if (!Number.isInteger(Number(codigoUsuario))) {
       setErrorMessage("Código de usuário deve ser um inteiro");
       return;
     }
 
-    // Clear any previous error message
     setErrorMessage("");
 
     const updatedUser = {
@@ -113,11 +106,15 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
       codigo_usuario: codigoUsuario,
       nome_completo: name,
       email,
-      senha: password,
       id_perfil: profile,
     };
 
     onConfirm(updatedUser);
+    onClose();
+  };
+
+  const handleClose = () => {
+    setErrorMessage("");
     onClose();
   };
 
@@ -149,20 +146,13 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <ModalInput
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
         <CustomSingleSelect
           fetchUrl="http://localhost:5050/api/perfis"
           placeholder="Profile"
           onChange={setProfile}
         />
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
+          <ActionButton type="button" onClick={handleClose}>
             Voltar
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
@@ -183,7 +173,6 @@ EditUserModal.propTypes = {
     id: PropTypes.number,
     nome_completo: PropTypes.string,
     email: PropTypes.string,
-    senha: PropTypes.string,
     id_perfil: PropTypes.number,
     codigo_usuario: PropTypes.number,
   }),

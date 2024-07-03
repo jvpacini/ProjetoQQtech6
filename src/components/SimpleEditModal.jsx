@@ -41,6 +41,13 @@ const ModalInput = styled.input`
   font-family: "Roboto", sans-serif;
 `;
 
+const ErrorMessage = styled.p`
+  color: red;
+  font-family: "Outfit", sans-serif;
+  font-weight: 700;
+  margin-bottom: 15px;
+`;
+
 const FormActions = styled.div`
   margin-top: 15px;
   display: flex;
@@ -68,6 +75,7 @@ const SimpleEditModal = ({
   rowData,
 }) => {
   const [formData, setFormData] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     if (rowData) {
@@ -78,10 +86,27 @@ const SimpleEditModal = ({
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrorMessage('');
   };
 
   const handleConfirm = () => {
-    onConfirm(formData);
+    let hasEmptyFields = false;
+    fields.forEach((field) => {
+      if (!formData[field.name] || formData[field.name].trim() === '') {
+        hasEmptyFields = true;
+      }
+    });
+
+    if (hasEmptyFields) {
+      setErrorMessage('Por favor preencha todos os campos');
+    } else {
+      onConfirm(formData);
+      onClose();
+    }
+  };
+
+  const handleClose = () => {
+    setErrorMessage("");
     onClose();
   };
 
@@ -90,6 +115,7 @@ const SimpleEditModal = ({
   return (
     <ModalContainer>
       <ModalTitle>{title}</ModalTitle>
+      {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
       <ModalForm>
         {fields.map((field, index) => (
           <ModalInput
@@ -103,7 +129,7 @@ const SimpleEditModal = ({
           />
         ))}
         <FormActions>
-          <ActionButton type="button" onClick={onClose}>
+          <ActionButton type="button" onClick={handleClose}>
             Cancel
           </ActionButton>
           <ActionButton type="button" onClick={handleConfirm}>
