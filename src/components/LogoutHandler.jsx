@@ -11,7 +11,7 @@ const useLogoutHandler = () => {
   const handleLogout = () => {
     setIsAuthenticated(false);
     Cookies.remove("accessToken"); // Clear the access token cookie
-    Cookies.remove("userId"); // Clear the userId cookie
+    Cookies.remove("currentUserId"); // Clear the userId cookie
     navigate("/login");
     console.log("Logout successful");
   };

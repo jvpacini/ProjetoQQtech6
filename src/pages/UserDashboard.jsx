@@ -26,6 +26,7 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   const [totalPages, setTotalPages] = useState(1);
   const rowsPerPage = 7;
 
+  
   const fetchData = async () => {
     try {
       const token = Cookies.get("accessToken");
@@ -122,6 +123,13 @@ const UserDashboard = ({ searchTerm, onSearch }) => {
   };
 
   const handleDeleteConfirm = async () => {
+    const currentUserId = Cookies.get('currentUserId');
+
+    if(selectedRow.id_usuario === parseInt(currentUserId)) {
+      alert("Você não pode deletar o usuário logado.");
+      return;
+    }
+    
     if (selectedRow) {
       try {
         await api.delete(`/usuarios/${selectedRow.id_usuario}`);

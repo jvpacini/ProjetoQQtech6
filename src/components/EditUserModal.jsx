@@ -148,7 +148,7 @@ const EditUserModal = ({ isVisible, onClose, title, onConfirm, userData }) => {
         />
         <CustomSingleSelect
           fetchUrl="http://localhost:5050/api/perfis"
-          placeholder="Profile"
+          placeholder="Perfil"
           onChange={setProfile}
         />
         <FormActions>

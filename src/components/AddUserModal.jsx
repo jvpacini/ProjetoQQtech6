@@ -162,7 +162,7 @@ const AddUserModal = ({ isVisible, onClose, title, onConfirm, fetchUrl }) => {
         />
         <CustomSingleSelect
           fetchUrl={fetchUrl}
-          placeholder="Profile"
+          placeholder="Perfil"
           onChange={setProfile}
         />
         <FormActions>
